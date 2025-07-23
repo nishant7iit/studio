@@ -3,7 +3,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, User, FileText, Server, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -294,6 +294,80 @@ const PrerequisitesSection = () => {
     );
 };
 
+const ApiFundamentalsSection = () => {
+    return (
+        <Section>
+            <SectionTitle>What even IS an API?</SectionTitle>
+             <motion.p variants={itemVariants} className="max-w-3xl mx-auto text-center text-lg text-muted-foreground mb-12">
+                Ever wondered how apps on your phone get weather updates, or how you can log in to a website with your Google account? The answer is APIs! Let's demystify them together using a simple analogy.
+            </motion.p>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-center text-2xl">The Restaurant Analogy</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <motion.div 
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4"
+                    >
+                        <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3 border shadow-sm">
+                            <div className="bg-primary/10 rounded-full p-4 mb-4">
+                               <User className="w-10 h-10 text-primary"/>
+                            </div>
+                            <h3 className="font-bold text-xl mb-2">You (The Client)</h3>
+                            <p className="text-muted-foreground">You are at a restaurant, ready to order. You know what you want, but you can't go into the kitchen yourself. You need to make a structured <span className="font-bold text-primary">Request</span>.</p>
+                        </motion.div>
+
+                        <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
+                            <motion.path d="M 25 0 V 80" stroke="hsl(var(--primary))" strokeWidth="2" variants={arrowVariants} />
+                            <motion.path d="M 20 70 L 25 80 L 30 70" stroke="hsl(var(--primary))" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
+                            <text x="30" y="45" fill="hsl(var(--muted-foreground))" fontSize="12" textAnchor="start">Request</text>
+                        </motion.svg>
+                        
+                        <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3 border shadow-sm">
+                           <div className="bg-accent/20 rounded-full p-4 mb-4">
+                              <FileText className="w-10 h-10 text-accent"/>
+                           </div>
+                            <h3 className="font-bold text-xl mb-2">The Menu (The API)</h3>
+                            <p className="text-muted-foreground">The menu provides a list of dishes you can order. It's a contract specifying what the kitchen can prepare. An API is a "menu" of defined requests that one application can make to another.</p>
+                        </motion.div>
+
+                        <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
+                            <motion.path d="M 25 0 V 80" stroke="hsl(var(--primary))" strokeWidth="2" variants={arrowVariants} />
+                            <motion.path d="M 20 70 L 25 80 L 30 70" stroke="hsl(var(--primary))" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
+                        </motion.svg>
+
+                        <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3 border shadow-sm">
+                            <div className="bg-accent/20 rounded-full p-4 mb-4">
+                               <Server className="w-10 h-10 text-accent"/>
+                            </div>
+                            <h3 className="font-bold text-xl mb-2">The Kitchen (The Server)</h3>
+                            <p className="text-muted-foreground">The kitchen takes your specific order, prepares it, and gets it ready. The server processes the request, retrieves the necessary data, and prepares a <span className="font-bold text-green-500">Response</span>.</p>
+                        </motion.div>
+
+                        <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
+                            <motion.path d="M 25 100 V 20" stroke="hsl(var(--green-500))" strokeWidth="2"  className="stroke-green-500" variants={arrowVariants} />
+                            <motion.path d="M 20 30 L 25 20 L 30 30" stroke="hsl(var(--green-500))" className="stroke-green-500" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
+                            <text x="30" y="65" fill="hsl(var(--muted-foreground))" fontSize="12" textAnchor="start">Response</text>
+                        </motion.svg>
+
+                         <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3 border shadow-sm">
+                           <div className="bg-primary/10 rounded-full p-4 mb-4">
+                              <User className="w-10 h-10 text-primary"/>
+                           </div>
+                            <h3 className="font-bold text-xl mb-2">You Get Your Food</h3>
+                            <p className="text-muted-foreground">Your food is delivered to your table! The application receives the data it requested and can display it to you.</p>
+                        </motion.div>
+                    </motion.div>
+                    <p className="text-center mt-12 text-lg max-w-3xl mx-auto">So, an <span className="font-bold">API</span> (Application Programming Interface) is that menu—a reliable intermediary that allows different applications to talk to each other in a structured way.</p>
+                </CardContent>
+            </Card>
+        </Section>
+    );
+}
 
 export function LearnApiPage() {
   const router = useRouter();
@@ -319,88 +393,8 @@ export function LearnApiPage() {
         <HeroSection />
         
         <PrerequisitesSection />
-
-        <Card className="mb-8">
-          <CardHeader>
-            <motion.div variants={sectionVariants} initial="hidden" animate="visible" className="text-center">
-                <motion.div variants={itemVariants}>
-                    <BookOpen className="w-16 h-16 mx-auto text-accent mb-4" />
-                </motion.div>
-                <CardTitle className="text-4xl">Welcome to the World of APIs</CardTitle>
-            </motion.div>
-          </CardHeader>
-          <CardContent>
-            <motion.p variants={itemVariants} initial="hidden" animate="visible" className="max-w-3xl mx-auto text-lg text-muted-foreground text-center">
-                Ever wondered how apps on your phone get weather updates, or how you can log in to a website with your Google account? The answer is APIs! Let's demystify them together.
-            </motion.p>
-          </CardContent>
-        </Card>
         
-        <Card className="mb-8">
-            <CardHeader>
-                <SectionTitle>The Restaurant Analogy</SectionTitle>
-            </CardHeader>
-            <CardContent>
-             <motion.div 
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.2 }}
-                className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-4"
-             >
-                <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3">
-                    <div className="bg-accent rounded-full p-4 mb-4">
-                       <User className="w-10 h-10 text-accent-foreground"/>
-                    </div>
-                    <h3 className="font-bold text-xl mb-2">You (The Client)</h3>
-                    <p className="text-muted-foreground">You are at a restaurant, ready to order from the menu. You know what you want, but you can't go into the kitchen yourself. You need to make a structured <span className="font-bold text-primary">Request</span>.</p>
-                </motion.div>
-
-                <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
-                    <motion.path d="M 25 0 V 80" stroke="hsl(var(--primary))" strokeWidth="2" variants={arrowVariants} />
-                    <motion.path d="M 20 70 L 25 80 L 30 70" stroke="hsl(var(--primary))" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
-                    <text x="30" y="45" fill="hsl(var(--muted-foreground))" fontSize="12" textAnchor="start">Request</text>
-                </motion.svg>
-                
-                <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3">
-                   <div className="bg-accent rounded-full p-4 mb-4">
-                      <FileText className="w-10 h-10 text-accent-foreground"/>
-                   </div>
-                    <h3 className="font-bold text-xl mb-2">The Menu (The API)</h3>
-                    <p className="text-muted-foreground">The menu provides a list of dishes you can order, along with a description of each dish. The API is like a menu that provides a list of defined requests that one can make.</p>
-                </motion.div>
-
-                <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
-                    <motion.path d="M 25 0 V 80" stroke="hsl(var(--primary))" strokeWidth="2" variants={arrowVariants} />
-                    <motion.path d="M 20 70 L 25 80 L 30 70" stroke="hsl(var(--primary))" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
-                </motion.svg>
-
-                <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3">
-                    <div className="bg-accent rounded-full p-4 mb-4">
-                       <Server className="w-10 h-10 text-accent-foreground"/>
-                    </div>
-                    <h3 className="font-bold text-xl mb-2">The Kitchen (The Server)</h3>
-                    <p className="text-muted-foreground">The kitchen receives the order, prepares the food, and sends it out. The server processes the request, retrieves the data, and sends back a <span className="font-bold text-green-500">Response</span>.</p>
-                </motion.div>
-
-                <motion.svg width="50" height="100" viewBox="0 0 50 100" variants={itemVariants}>
-                    <motion.path d="M 25 100 V 20" stroke="hsl(var(--green-500))" strokeWidth="2"  className="stroke-green-500" variants={arrowVariants} />
-                    <motion.path d="M 20 30 L 25 20 L 30 30" stroke="hsl(var(--green-500))" className="stroke-green-500" fill="transparent" strokeWidth="2" variants={arrowVariants}/>
-                    <text x="30" y="65" fill="hsl(var(--muted-foreground))" fontSize="12" textAnchor="start">Response</text>
-                </motion.svg>
-
-                 <motion.div variants={itemVariants} className="flex flex-col items-center p-6 bg-card rounded-lg w-full md:w-2/3">
-                   <div className="bg-accent rounded-full p-4 mb-4">
-                      <User className="w-10 h-10 text-accent-foreground"/>
-                   </div>
-                    <h3 className="font-bold text-xl mb-2">You Get Your Food</h3>
-                    <p className="text-muted-foreground">Your food is delivered to your table! The application receives the data it requested and can display it to the user.</p>
-                </motion.div>
-
-             </motion.div>
-             <p className="text-center mt-12 text-lg max-w-3xl mx-auto">An <span className="font-bold">API</span> (Application Programming Interface) is that menu, a contract that allows different applications to talk to each other in a structured and predictable way.</p>
-            </CardContent>
-        </Card>
+        <ApiFundamentalsSection />
 
         <Card className="mb-8">
             <CardHeader>
@@ -506,5 +500,3 @@ export function LearnApiPage() {
     </div>
   );
 }
-
-    
