@@ -11,16 +11,16 @@ import { generateCodeSnippet } from '@/ai/flows/generate-code-snippets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CodeSnippetViewer } from '@/components/code-snippet-viewer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Terminal, AlertTriangle, X } from 'lucide-react';
+import { Code, Terminal, AlertTriangle, X, Save } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const generateId = (): string => {
     if (typeof window !== 'undefined') {
-      return Math.random().toString(36).substring(2, 11);
+      return `req_${Math.random().toString(36).substring(2, 11)}`;
     }
-    return new Date().getTime().toString();
+    return `req_${new Date().getTime().toString()}`;
 };
 
 export function ApiSandbox() {
@@ -44,8 +44,8 @@ export function ApiSandbox() {
       name: 'Untitled Request',
       method: 'GET',
       url: 'https://jsonplaceholder.typicode.com/todos/1',
-      queryParams: [{ id: generateId(), key: '', value: '', enabled: true }],
-      headers: [{ id: generateId(), key: 'Content-Type', value: 'application/json', enabled: true }],
+      queryParams: [{ id: `kv_${generateId()}`, key: '', value: '', enabled: true }],
+      headers: [{ id: `kv_${generateId()}`, key: 'Content-Type', value: 'application/json', enabled: true }],
       body: '',
       bodyType: 'none',
     };
@@ -64,30 +64,61 @@ export function ApiSandbox() {
     setResponse(null);
   };
   
-  const validateUrl = (url: string) => {
+  const handleSaveRequest = () => {
+    if (!activeRequest) return;
+
+    let isNewToCollections = true;
+    const updatedCollections = collections.map(collection => {
+      const requestIndex = collection.children?.findIndex(child => child.id === activeRequest.id);
+      if (requestIndex !== -1 && requestIndex !== undefined && collection.children) {
+        isNewToCollections = false;
+        const updatedChildren = [...collection.children];
+        updatedChildren[requestIndex] = {
+            id: activeRequest.id,
+            name: activeRequest.name,
+            type: 'request',
+            request: activeRequest,
+        };
+        return { ...collection, children: updatedChildren };
+      }
+      return collection;
+    });
+
+    if (isNewToCollections) {
+      toast({
+        title: "Request not in a collection",
+        description: "Save this request to a new or existing collection first.",
+      });
+      // Optionally, open a dialog to select/create a collection.
+      // For now, we just notify.
+    } else {
+       setCollections(updatedCollections);
+       toast({
+        title: "Request Saved",
+        description: `"${activeRequest.name}" has been updated.`,
+      });
+    }
+  };
+
+  const validateUrl = (url: string): boolean => {
+    if (!url) return false;
     try {
       new URL(url);
       return true;
     } catch (_) {
       return false;
     }
-  }
+  };
+
 
   const handleSendRequest = async () => {
-    if (!activeRequest || !activeRequest.url) {
-      toast({
-        variant: "destructive",
-        title: "URL is required",
-        description: "Please enter a URL before sending a request.",
-      });
-      return;
-    }
+    if (!activeRequest) return;
     
     if (!validateUrl(activeRequest.url)) {
       toast({
         variant: "destructive",
         title: "Invalid URL",
-        description: "Please enter a valid URL.",
+        description: "Please enter a valid URL before sending a request.",
       });
       return;
     }
@@ -138,7 +169,7 @@ export function ApiSandbox() {
       const endTime = Date.now();
       
       const responseBody = await res.text();
-      const responseSize = responseBody.length;
+      const responseSize = new Blob([responseBody]).size;
 
       let responseData;
       try {
@@ -159,16 +190,17 @@ export function ApiSandbox() {
         data: responseData,
         time: endTime - startTime,
         size: responseSize,
+        raw: responseBody,
       };
       setResponse(newResponse);
 
       const newHistoryItem: RequestHistoryItem = {
-        id: generateId(),
+        id: `hist_${generateId()}`,
         request: activeRequest,
         response: newResponse,
         timestamp: Date.now(),
       };
-      setHistory([newHistoryItem, ...history].slice(0, 50));
+      setHistory(prev => [newHistoryItem, ...prev].slice(0, 50));
 
     } catch (error: any) {
       const endTime = Date.now();
@@ -183,6 +215,7 @@ export function ApiSandbox() {
         data: { error: 'Failed to fetch. This might be due to a CORS issue, network problem, or invalid URL.', details: error.message },
         time: endTime - startTime,
         size: 0,
+        raw: error.message,
       };
       setResponse(errorResponse);
        toast({
@@ -263,16 +296,15 @@ export function ApiSandbox() {
             <SidebarTrigger/>
             <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => {
-                const newId = generateId();
-                const newRequest = {...activeRequest, id: newId, name: `${activeRequest.name} (Copy)`};
-                setActiveRequest(newRequest);
-              }}>Save</Button>
+              <Button variant="outline" size="sm" onClick={handleSaveRequest}>
+                <Save className="mr-2 h-4 w-4" />
+                Save
+              </Button>
               <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Code className="mr-2 h-4 w-4" />
-                    Generate Code
+                    Code
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">

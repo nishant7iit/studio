@@ -25,6 +25,7 @@ export interface ApiResponse {
   data: any;
   time: number;
   size: number;
+  raw: string;
 }
 
 export interface RequestHistoryItem {

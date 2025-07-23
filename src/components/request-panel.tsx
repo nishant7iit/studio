@@ -29,34 +29,36 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
 
   const getMethodClass = (method: HttpMethod) => {
     switch (method) {
-      case 'GET': return 'text-green-500';
-      case 'POST': return 'text-orange-500';
-      case 'PUT': return 'text-blue-500';
-      case 'PATCH': return 'text-purple-500';
-      case 'DELETE': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'GET': return 'text-green-600 font-bold';
+      case 'POST': return 'text-orange-600 font-bold';
+      case 'PUT': return 'text-blue-600 font-bold';
+      case 'PATCH': return 'text-purple-600 font-bold';
+      case 'DELETE': return 'text-red-600 font-bold';
+      case 'HEAD': return 'text-gray-600 font-bold';
+      case 'OPTIONS': return 'text-pink-600 font-bold';
+      default: return 'text-gray-500 font-bold';
     }
   };
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-sm">
       <CardContent className="p-0">
         <div className="flex gap-0">
           <Select value={request.method} onValueChange={handleMethodChange}>
             <SelectTrigger className={cn(
-              "w-[120px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0",
+              "w-[130px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 font-mono",
               getMethodClass(request.method)
             )}>
               <SelectValue placeholder="Method" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="GET">GET</SelectItem>
-              <SelectItem value="POST">POST</SelectItem>
-              <SelectItem value="PUT">PUT</SelectItem>
-              <SelectItem value="PATCH">PATCH</SelectItem>
-              <SelectItem value="DELETE">DELETE</SelectItem>
-              <SelectItem value="HEAD">HEAD</SelectItem>
-              <SelectItem value="OPTIONS">OPTIONS</SelectItem>
+              <SelectItem value="GET" className={getMethodClass('GET')}>GET</SelectItem>
+              <SelectItem value="POST" className={getMethodClass('POST')}>POST</SelectItem>
+              <SelectItem value="PUT" className={getMethodClass('PUT')}>PUT</SelectItem>
+              <SelectItem value="PATCH" className={getMethodClass('PATCH')}>PATCH</SelectItem>
+              <SelectItem value="DELETE" className={getMethodClass('DELETE')}>DELETE</SelectItem>
+              <SelectItem value="HEAD" className={getMethodClass('HEAD')}>HEAD</SelectItem>
+              <SelectItem value="OPTIONS" className={getMethodClass('OPTIONS')}>OPTIONS</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex-1 relative">
@@ -64,7 +66,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
                 placeholder="https://api.example.com/data"
                 value={request.url}
                 onChange={e => onUpdateRequest({ url: e.target.value })}
-                className="font-code rounded-l-none pr-28"
+                className="font-code rounded-l-none pr-28 text-base"
             />
              <Button onClick={onSend} disabled={loading} className="w-[100px] absolute right-1 top-1/2 -translate-y-1/2 h-8">
               {loading ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
