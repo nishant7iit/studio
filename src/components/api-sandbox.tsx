@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { Input } from './ui/input';
 import { EnvironmentEditor } from './environment-editor';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { ThemeToggle } from './theme-toggle';
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -142,7 +143,7 @@ export function ApiSandbox() {
   
   const substituteVariables = (str: string): string => {
     const activeEnvironment = environments.find(env => env.id === activeEnvironmentId);
-    if (!activeEnvironment) return str;
+    if (!activeEnvironment || !str) return str;
     
     let substitutedStr = str;
     activeEnvironment.variables.forEach(variable => {
@@ -409,6 +410,7 @@ export function ApiSandbox() {
                     <CodeSnippetViewer code={generatedCode} language={codeLanguage.toLowerCase().split(' ')[0]} isLoading={isCodeGenLoading} />
                   </DialogContent>
                 </Dialog>
+                <ThemeToggle />
               </div>
             </header>
             
