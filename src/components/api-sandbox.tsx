@@ -12,15 +12,11 @@ import { generateCodeSnippet } from '@/ai/flows/generate-code-snippets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CodeSnippetViewer } from '@/components/code-snippet-viewer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Terminal, AlertTriangle, X, Save } from 'lucide-react';
+import { Code, Terminal, AlertTriangle, X, Save, GraduationCap } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-const generateId = (): string => {
-    // This function is safe to use on client-side only hooks/effects
-    return `id_${Math.random().toString(36).substring(2, 11)}`;
-};
+import Link from 'next/link';
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -38,6 +34,10 @@ export function ApiSandbox() {
   const [showCorsWarning, setShowCorsWarning] = useState(false);
 
   useEffect(() => {
+    const generateId = (): string => {
+        // This function is safe to use on client-side only hooks/effects
+        return `id_${Math.random().toString(36).substring(2, 11)}`;
+    };
     // Only run on the client
     if (typeof window !== 'undefined' && !activeRequest) {
         const defaultRequest: ApiRequest = {
@@ -194,7 +194,10 @@ export function ApiSandbox() {
         raw: responseBody,
       };
       setResponse(newResponse);
-
+      const generateId = (): string => {
+        // This function is safe to use on client-side only hooks/effects
+        return `id_${Math.random().toString(36).substring(2, 11)}`;
+      };
       const newHistoryItem: RequestHistoryItem = {
         id: `hist_${generateId()}`,
         request: activeRequest,
@@ -293,8 +296,7 @@ export function ApiSandbox() {
             />
           </SidebarContent>
         </Sidebar>
-        <SidebarInset>
-          <div className="flex flex-col h-screen overflow-hidden">
+        <div className="flex flex-col h-screen flex-1">
             <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
               <SidebarTrigger/>
               <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
@@ -303,6 +305,12 @@ export function ApiSandbox() {
                   <Save className="mr-2 h-4 w-4" />
                   Save
                 </Button>
+                 <Link href="/learn">
+                    <Button variant="outline" size="sm">
+                        <GraduationCap className="mr-2 h-4 w-4" />
+                        Learn APIs
+                    </Button>
+                </Link>
                 <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -353,7 +361,6 @@ export function ApiSandbox() {
                 <ResponsePanel response={response} loading={loading} />
             </main>
           </div>
-        </SidebarInset>
       </div>
     </SidebarProvider>
   );
