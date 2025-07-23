@@ -15,21 +15,16 @@ import { Code, Terminal } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
-const generateId = () => Math.random().toString(36).substring(2, 11);
-
-const defaultRequest: ApiRequest = {
-  id: generateId(),
-  name: 'Untitled Request',
-  method: 'GET',
-  url: '',
-  queryParams: [{ id: generateId(), key: '', value: '', enabled: true }],
-  headers: [{ id: generateId(), key: '', value: '', enabled: true }],
-  body: '',
-  bodyType: 'none',
+const generateId = () => {
+    if (typeof window !== 'undefined') {
+        return Math.random().toString(36).substring(2, 11);
+    }
+    return '';
 };
 
+
 export function ApiSandbox() {
-  const [activeRequest, setActiveRequest] = useState<ApiRequest>(defaultRequest);
+  const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
   const [response, setResponse] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -41,9 +36,26 @@ export function ApiSandbox() {
   const [codeLanguage, setCodeLanguage] = useState('cURL');
   const [isCodeGenOpen, setIsCodeGenOpen] = useState(false);
   const [isCodeGenLoading, setIsCodeGenLoading] = useState(false);
+  
+  useEffect(() => {
+    const defaultRequest: ApiRequest = {
+      id: generateId(),
+      name: 'Untitled Request',
+      method: 'GET',
+      url: '',
+      queryParams: [{ id: generateId(), key: '', value: '', enabled: true }],
+      headers: [{ id: generateId(), key: '', value: '', enabled: true }],
+      body: '',
+      bodyType: 'none',
+    };
+    setActiveRequest(defaultRequest);
+  }, []);
+
 
   const updateRequest = (updatedFields: Partial<ApiRequest>) => {
-    setActiveRequest(prev => ({ ...prev, ...updatedFields }));
+    if (activeRequest) {
+      setActiveRequest(prev => prev ? { ...prev, ...updatedFields } : null);
+    }
   };
 
   const handleSelectRequest = (request: ApiRequest) => {
@@ -52,6 +64,8 @@ export function ApiSandbox() {
   };
 
   const handleSendRequest = async () => {
+    if (!activeRequest) return;
+    
     setLoading(true);
     setResponse(null);
     const startTime = Date.now();
@@ -137,6 +151,7 @@ export function ApiSandbox() {
   };
   
   const handleGenerateCode = async (lang: string) => {
+    if (!activeRequest) return;
     setIsCodeGenLoading(true);
     setGeneratedCode(`Generating snippet for ${lang}...`);
     try {
@@ -163,11 +178,15 @@ export function ApiSandbox() {
   };
 
   useEffect(() => {
-    if (isCodeGenOpen) {
+    if (isCodeGenOpen && activeRequest) {
       handleGenerateCode(codeLanguage);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCodeGenOpen, codeLanguage]);
+  }, [isCodeGenOpen, codeLanguage, activeRequest]);
+
+  if (!activeRequest) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <SidebarProvider>
