@@ -2,13 +2,35 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Server, Smartphone, Zap, Network, Handshake, ToyBrick, User, FileText, Building, ArrowRight } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Server, 
+  Smartphone, 
+  Zap, 
+  Network, 
+  Handshake, 
+  ToyBrick, 
+  User, 
+  FileText, 
+  Building, 
+  ArrowRight,
+  CloudSun,
+  ShoppingCart,
+  MessageSquare,
+  Map,
+  Badge,
+  Mail,
+  FilePlus,
+  FileCheck,
+  Trash2,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ApiChatbot } from './api-chatbot';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
+
 
 // Part 1: Hero Section Component
 const HeroSection = () => {
@@ -33,7 +55,7 @@ const HeroSection = () => {
                 repeat: Infinity, 
                 ease: 'linear'
               }}
-              style={{ motionPath: `M0,0 H${(document.querySelector('.relative.w-full.h-px')?.clientWidth || 0)}px` }}
+              style={{ offsetMotion: `path("M0,0 H${(document.querySelector('.relative.w-full.h-px')?.clientWidth || 0)}px")` }}
             />
           ))}
         </div>
@@ -84,7 +106,6 @@ const HeroSection = () => {
     </div>
   );
 };
-
 
 // Part 2: Prerequisites Section
 const PrerequisiteBlock = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => {
@@ -166,7 +187,7 @@ const ApiFundamentalsSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-12"
+        className="text-center mb-12 px-4"
       >
         <h2 className="text-3xl font-bold">What Even IS an API?</h2>
         <p className="text-muted-foreground mt-2">API stands for Application Programming Interface. Let's break that down.</p>
@@ -218,7 +239,7 @@ const ApiFundamentalsSection = () => {
             </CardContent>
         </Card>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
             <h3 className="text-2xl font-bold">An API is a Bridge</h3>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">Think of two separate applications as islands. An API acts as a bridge between them, allowing them to share data and functionality securely and efficiently.</p>
             <div className="flex justify-center items-center gap-4 mt-8">
@@ -235,6 +256,105 @@ const ApiFundamentalsSection = () => {
                 <Zap className="w-16 h-16 text-accent" />
             </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Part 4: Interactive Discovery
+const InteractiveDiscoverySection = () => {
+  const AppCard = ({ icon, name }: { icon: React.ReactNode, name: string }) => (
+    <motion.div
+      whileHover="hover"
+      className="relative bg-card border rounded-lg p-8 flex flex-col items-center justify-center text-center shadow-md hover:shadow-xl transition-shadow cursor-pointer"
+    >
+      <div className="text-primary mb-4">{icon}</div>
+      <h3 className="text-xl font-bold">{name}</h3>
+      <AnimatePresence>
+        <motion.div
+          variants={{
+            initial: { opacity: 0, y: 10 },
+            hover: { opacity: 1, y: 0 },
+          }}
+          initial="initial"
+          className="absolute bottom-4"
+        >
+          <Badge>Powered by APIs</Badge>
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
+  );
+
+  return (
+    <div className="py-16">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-3xl font-bold">APIs Are Everywhere</h2>
+        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">You use apps powered by APIs every day without even realizing it. Hover over these examples to see.</p>
+      </motion.div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <AppCard icon={<CloudSun className="w-16 h-16" />} name="Weather Apps" />
+        <AppCard icon={<MessageSquare className="w-16 h-16" />} name="Social Media" />
+        <AppCard icon={<ShoppingCart className="w-16 h-16" />} name="E-commerce" />
+        <AppCard icon={<Map className="w-16 h-16" />} name="Mapping Services" />
+      </div>
+    </div>
+  );
+};
+
+// Part 5: Anatomy of a Request
+const AnatomyOfRequestSection = () => {
+  const MethodCard = ({ icon, title, color, children }: { icon: React.ReactNode, title: string, color: string, children: React.ReactNode }) => (
+    <motion.div 
+      className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+      whileHover={{ y: -5 }}
+    >
+      <div className="flex items-center gap-4 mb-4">
+        <motion.div
+          className={cn("p-2 rounded-full", color)}
+          whileHover={{ rotate: 15 }}
+        >
+          {icon}
+        </motion.div>
+        <h3 className={cn("text-xl font-bold", color.replace('bg-', 'text-'))}>{title}</h3>
+      </div>
+      <p className="text-muted-foreground text-sm">{children}</p>
+    </motion.div>
+  );
+
+  return (
+    <div className="py-16 bg-muted rounded-lg">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-12 px-4"
+      >
+        <h2 className="text-3xl font-bold">The Anatomy of a Request</h2>
+        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">To get data from an API, you need to make a "request." Think of it as filling out a specific form to ask the server for what you need.</p>
+      </motion.div>
+      <div className="container mx-auto px-4">
+         <h3 className="text-2xl font-bold text-center mb-8">HTTP Methods: The "Verb" of your Request</h3>
+         <div className="grid md:grid-cols-2 gap-6">
+            <MethodCard icon={<Mail className="w-8 h-8 text-white"/>} title="GET" color="bg-green-500">
+                Retrieves data from a server. It's like asking to **read** a letter from a mailbox without changing it.
+            </MethodCard>
+             <MethodCard icon={<FilePlus className="w-8 h-8 text-white"/>} title="POST" color="bg-orange-500">
+                Submits new data to a server. It's like putting a **new** letter into the mailbox to be filed away.
+            </MethodCard>
+             <MethodCard icon={<FileCheck className="w-8 h-8 text-white"/>} title="PUT" color="bg-blue-500">
+                Updates existing data on a server. It's like **replacing** an entire letter in the mailbox with a new version.
+            </MethodCard>
+             <MethodCard icon={<Trash2 className="w-8 h-8 text-white"/>} title="DELETE" color="bg-red-500">
+                Removes data from a server. It's like taking a letter out of the mailbox and **shredding** it.
+            </MethodCard>
+         </div>
       </div>
     </div>
   );
@@ -265,12 +385,13 @@ export function LearnApiPage() {
         <HeroSection />
         <PrerequisitesSection />
         <ApiFundamentalsSection />
-
-        {/* Future parts will be added here */}
-        
+        <InteractiveDiscoverySection />
+        <AnatomyOfRequestSection />
       </main>
 
       <ApiChatbot />
     </div>
   );
 }
+
+    
