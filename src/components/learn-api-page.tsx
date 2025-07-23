@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ApiChatbot } from './api-chatbot';
+import { cn } from '@/lib/utils';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -193,5 +194,3 @@ export function LearnApiPage() {
     </div>
   );
 }
-
-    
