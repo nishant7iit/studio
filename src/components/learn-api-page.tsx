@@ -3,7 +3,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map, Mailbox, Mail, FilePlus, Replace, Trash2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map, Mailbox, Mail, FilePlus, Replace, Trash2, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -411,12 +411,69 @@ const MethodVisualization = ({ method, description, color, children }: { method:
     </motion.div>
 );
 
+const JsonViewerNode: React.FC<{ nodeKey: string, value: any, isRoot?: boolean }> = ({ nodeKey, value, isRoot = false }) => {
+  const [isExpanded, setIsExpanded] = useState(isRoot);
+  const isObject = typeof value === 'object' && value !== null && !Array.isArray(value);
+  const isArray = Array.isArray(value);
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  }
+
+  const renderValue = () => {
+    if (typeof value === 'string') return <span className="text-green-600 dark:text-green-400">"{value}"</span>;
+    if (typeof value === 'number') return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
+    if (typeof value === 'boolean') return <span className="text-purple-600 dark:text-purple-400">{String(value)}</span>;
+    if (value === null) return <span className="text-gray-500">null</span>;
+    return null;
+  };
+
+  if (isObject || isArray) {
+    const braceOpen = isArray ? '[' : '{';
+    const braceClose = isArray ? ']' : '}';
+    const entries = Object.entries(value);
+
+    return (
+      <div className="font-code text-sm">
+        <div className="flex items-center cursor-pointer" onClick={toggleExpand}>
+          {entries.length > 0 && (
+            isExpanded ? <ChevronDown className="w-4 h-4 mr-1 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 mr-1 flex-shrink-0" />
+          )}
+          <span className="text-gray-700 dark:text-gray-300 font-medium">{!isArray && `${nodeKey}:`}</span>
+          <span className="text-gray-500 ml-1">{braceOpen}</span>
+        </div>
+        {isExpanded && (
+          <div className="pl-6 border-l border-gray-200 dark:border-gray-700 ml-2">
+            {entries.map(([key, val]) => (
+              <JsonViewerNode key={key} nodeKey={key} value={val} />
+            ))}
+            <div className="text-gray-500">{braceClose}</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-code text-sm flex items-start">
+      <span className="text-gray-700 dark:text-gray-300 font-medium mr-1">{nodeKey}:</span>
+      {renderValue()}
+    </div>
+  );
+};
+
 
 export function LearnApiPage() {
   const router = useRouter();
   
   const handleBackToSandbox = () => {
     router.push('/');
+  };
+  
+  const bodyExample = {
+    "name": "John Doe",
+    "email": "john.doe@example.com"
   };
 
   return (
@@ -530,16 +587,23 @@ export function LearnApiPage() {
                     <div>
                         <h3 className="text-2xl font-semibold mb-2">3. Headers</h3>
                         <p>Extra information for the server, like metadata. This often includes authentication tokens or the format of the data you're sending.</p>
-                        <CodeBlock>{`"Content-Type": "application/json"
-"Authorization": "Bearer your_api_key_here"`}</CodeBlock>
+                        <div className="bg-secondary p-4 rounded-lg my-4 space-y-2">
+                           <div className="flex items-center gap-2 font-code text-sm">
+                               <span className="font-semibold text-primary">Content-Type:</span>
+                               <span className="bg-primary/10 text-primary-foreground-subtle px-2 py-1 rounded-md">"application/json"</span>
+                           </div>
+                            <div className="flex items-center gap-2 font-code text-sm">
+                               <span className="font-semibold text-accent">Authorization:</span>
+                               <span className="bg-accent/10 text-accent-foreground-subtle px-2 py-1 rounded-md">"Bearer your_api_key_here"</span>
+                           </div>
+                        </div>
                     </div>
                     <div>
                         <h3 className="text-2xl font-semibold mb-2">4. The Body</h3>
                         <p>The data you're sending to the server. This is mainly used with POST, PUT, and PATCH requests.</p>
-                        <CodeBlock>{`{
-    "name": "John Doe",
-    "email": "john.doe@example.com"
-}`}</CodeBlock>
+                        <div className="bg-secondary p-4 rounded-lg my-4">
+                           <JsonViewerNode nodeKey="body" value={bodyExample} isRoot={true} />
+                        </div>
                     </div>
                 </div>
             </CardContent>
@@ -606,5 +670,3 @@ export function LearnApiPage() {
     </div>
   );
 }
-
-    
