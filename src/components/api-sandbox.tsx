@@ -334,33 +334,26 @@ export function ApiSandbox() {
             </div>
           </header>
           
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 overflow-hidden">
-            <div className="flex flex-col overflow-y-auto">
-                <RequestPanel 
-                    request={activeRequest}
-                    onUpdateRequest={updateRequest}
-                    onSend={handleSendRequest}
-                    loading={loading}
-                />
-                {showCorsWarning && (
-                    <div className="pt-4">
-                        <Alert variant="destructive" className="relative">
-                            <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>CORS Error</AlertTitle>
-                            <AlertDescription>
-                                The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
-                            </AlertDescription>
-                            <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
-                                <X className="h-4 w-4" />
-                            </button>
-                        </Alert>
-                    </div>
-                )}
-            </div>
-
-            <div className="flex flex-col overflow-y-auto h-full">
+          <div className="flex-1 overflow-auto p-4 space-y-4">
+              <RequestPanel 
+                  request={activeRequest}
+                  onUpdateRequest={updateRequest}
+                  onSend={handleSendRequest}
+                  loading={loading}
+              />
+              {showCorsWarning && (
+                  <Alert variant="destructive" className="relative">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertTitle>CORS Error</AlertTitle>
+                      <AlertDescription>
+                          The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
+                      </AlertDescription>
+                      <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
+                          <X className="h-4 w-4" />
+                      </button>
+                  </Alert>
+              )}
               <ResponsePanel response={response} loading={loading} />
-            </div>
           </div>
         </SidebarInset>
       </div>
