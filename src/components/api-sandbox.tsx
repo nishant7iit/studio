@@ -293,63 +293,65 @@ export function ApiSandbox() {
             />
           </SidebarContent>
         </Sidebar>
-        <SidebarInset className="flex flex-col overflow-hidden">
-          <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
-            <SidebarTrigger/>
-            <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleSaveRequest}>
-                <Save className="mr-2 h-4 w-4" />
-                Save
-              </Button>
-              <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Code className="mr-2 h-4 w-4" />
-                    Code
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Generate Code Snippet</DialogTitle>
-                  </DialogHeader>
-                  <Select value={codeLanguage} onValueChange={setCodeLanguage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cURL">cURL</SelectItem>
-                      <SelectItem value="JavaScript (fetch)">JavaScript (fetch)</SelectItem>
-                      <SelectItem value="JavaScript (axios)">JavaScript (axios)</SelectItem>
-                      <SelectItem value="Python (requests)">Python (requests)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <CodeSnippetViewer code={generatedCode} language={codeLanguage.toLowerCase().split(' ')[0]} isLoading={isCodeGenLoading} />
-                </DialogContent>
-              </Dialog>
-            </div>
-          </header>
-          
-          <div className="flex-1 overflow-auto p-4 space-y-4">
-              <RequestPanel 
-                  request={activeRequest}
-                  onUpdateRequest={updateRequest}
-                  onSend={handleSendRequest}
-                  loading={loading}
-              />
-              {showCorsWarning && (
-                  <Alert variant="destructive" className="relative">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>CORS Error</AlertTitle>
-                      <AlertDescription>
-                          The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
-                      </AlertDescription>
-                      <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
-                          <X className="h-4 w-4" />
-                      </button>
-                  </Alert>
-              )}
-              <ResponsePanel response={response} loading={loading} />
+        <SidebarInset>
+          <div className="flex flex-col h-screen overflow-hidden">
+            <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
+              <SidebarTrigger/>
+              <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleSaveRequest}>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </Button>
+                <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Code className="mr-2 h-4 w-4" />
+                      Code
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Generate Code Snippet</DialogTitle>
+                    </DialogHeader>
+                    <Select value={codeLanguage} onValueChange={setCodeLanguage}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cURL">cURL</SelectItem>
+                        <SelectItem value="JavaScript (fetch)">JavaScript (fetch)</SelectItem>
+                        <SelectItem value="JavaScript (axios)">JavaScript (axios)</SelectItem>
+                        <SelectItem value="Python (requests)">Python (requests)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <CodeSnippetViewer code={generatedCode} language={codeLanguage.toLowerCase().split(' ')[0]} isLoading={isCodeGenLoading} />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </header>
+            
+            <main className="flex-1 overflow-auto p-4 space-y-4">
+                <RequestPanel 
+                    request={activeRequest}
+                    onUpdateRequest={updateRequest}
+                    onSend={handleSendRequest}
+                    loading={loading}
+                />
+                {showCorsWarning && (
+                    <Alert variant="destructive" className="relative">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>CORS Error</AlertTitle>
+                        <AlertDescription>
+                            The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
+                        </AlertDescription>
+                        <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
+                            <X className="h-4 w-4" />
+                        </button>
+                    </Alert>
+                )}
+                <ResponsePanel response={response} loading={loading} />
+            </main>
           </div>
         </SidebarInset>
       </div>
