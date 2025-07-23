@@ -12,7 +12,7 @@ import { generateCodeSnippet } from '@/ai/flows/generate-code-snippets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CodeSnippetViewer } from '@/components/code-snippet-viewer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Terminal, AlertTriangle, X, Save, GraduationCap } from 'lucide-react';
+import { Code, Terminal, AlertTriangle, X, Save, GraduationCap, List } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -337,6 +337,12 @@ export function ApiSandbox() {
                         Learn APIs
                     </Button>
                 </Link>
+                <a href="https://free-apis.github.io/" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" size="sm">
+                        <List className="mr-2 h-4 w-4" />
+                        Free APIs
+                    </Button>
+                </a>
                 <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -391,3 +397,5 @@ export function ApiSandbox() {
     </SidebarProvider>
   );
 }
+
+    
