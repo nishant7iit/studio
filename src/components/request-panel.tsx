@@ -44,7 +44,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
   const isBodyDisabled = request.method === 'GET' || request.method === 'HEAD';
 
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm shrink-0">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           <Select value={request.method} onValueChange={handleMethodChange}>

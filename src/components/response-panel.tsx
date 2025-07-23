@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ApiResponse } from '@/lib/types';
@@ -36,7 +37,7 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
 
   if (loading) {
     return (
-      <Card className="h-full shadow-sm">
+      <Card className="h-full shadow-sm flex-1">
         <CardHeader>
           <CardTitle>Response</CardTitle>
         </CardHeader>
@@ -57,7 +58,7 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
 
   if (!response) {
     return (
-      <Card className="h-full flex items-center justify-center min-h-[200px] border-dashed shadow-sm">
+      <Card className="h-full flex items-center justify-center flex-1 border-dashed shadow-sm">
         <div className="text-center text-muted-foreground">
           <Server className="mx-auto h-12 w-12" />
           <p className="mt-4 font-medium">Send a request to see the response</p>
@@ -75,8 +76,8 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
   };
 
   return (
-    <Card className="h-full flex flex-col shadow-sm">
-      <CardHeader>
+    <Card className="h-full flex flex-col shadow-sm flex-1 min-h-0">
+      <CardHeader className="shrink-0">
         <div className="flex justify-between items-center">
           <CardTitle>Response</CardTitle>
           <div className="flex items-center gap-4 text-xs">
@@ -95,7 +96,7 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0">
         <Tabs defaultValue="body" className="flex-1 flex flex-col">
-          <TabsList className="grid grid-cols-2">
+          <TabsList className="grid grid-cols-2 shrink-0">
             <TabsTrigger value="body">Body</TabsTrigger>
             <TabsTrigger value="headers">Headers</TabsTrigger>
           </TabsList>

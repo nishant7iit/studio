@@ -412,7 +412,7 @@ export function ApiSandbox() {
               </div>
             </header>
             
-            <main className="flex-1 overflow-auto p-4 space-y-4">
+            <main className="flex-1 overflow-auto p-4 flex flex-col gap-4">
                 <RequestPanel 
                     request={activeRequest}
                     onUpdateRequest={updateRequest}
@@ -420,7 +420,7 @@ export function ApiSandbox() {
                     loading={loading}
                 />
                 {showCorsWarning && (
-                    <Alert variant="destructive" className="relative">
+                    <Alert variant="destructive" className="relative shrink-0">
                         <AlertTriangle className="h-4 w-4" />
                         <AlertTitle>CORS Error</AlertTitle>
                         <AlertDescription>
