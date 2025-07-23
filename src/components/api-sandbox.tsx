@@ -18,10 +18,7 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const generateId = (): string => {
-    if (typeof window === 'undefined') {
-      // Return a placeholder or handle server-side case
-      return `ssr_id_${Math.random()}`;
-    }
+    // This function is safe to use on client-side only hooks/effects
     return `id_${Math.random().toString(36).substring(2, 11)}`;
 };
 
@@ -55,7 +52,8 @@ export function ApiSandbox() {
         };
         setActiveRequest(defaultRequest);
     }
-  }, [activeRequest]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   const updateRequest = (updatedFields: Partial<ApiRequest>) => {
@@ -94,8 +92,6 @@ export function ApiSandbox() {
         title: "Request not in a collection",
         description: "Save this request to a new or existing collection first.",
       });
-      // Optionally, open a dialog to select/create a collection.
-      // For now, we just notify.
     } else {
        setCollections(updatedCollections);
        toast({

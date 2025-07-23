@@ -6,39 +6,32 @@ import { useState, useEffect } from 'react';
 // A custom hook to synchronize state with localStorage
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
   
-  // State to store our value
-  // Pass initial state function to useState so logic is only executed once
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    // This part now only runs on the client-side, preventing hydration mismatch
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
-    try {
-      // Get from local storage by key
-      const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      // If error also return initialValue
-      console.error(error);
-      return initialValue;
-    }
-  });
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // useEffect to update local storage when the state changes
   useEffect(() => {
+    // This effect runs once on the client to initialize the state from localStorage
     try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore = storedValue;
-      // Save state
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
+      const item = window.localStorage.getItem(key);
+      setStoredValue(item ? JSON.parse(item) : initialValue);
     } catch (error) {
-      // A more advanced implementation would handle the error case
       console.error(error);
+      setStoredValue(initialValue);
     }
-  }, [key, storedValue]);
+    setIsInitialized(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // This effect runs only after initialization and when storedValue changes
+    if (isInitialized) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(storedValue));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [key, storedValue, isInitialized]);
 
   const setValue = (value: T | ((val: T) => T)) => {
     const valueToStore = value instanceof Function ? value(storedValue) : value;
