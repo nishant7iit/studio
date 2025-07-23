@@ -350,7 +350,7 @@ export function ApiSandbox() {
               />
               <div className="flex items-center gap-2">
                  <Select value={activeEnvironmentId || 'none'} onValueChange={v => setActiveEnvironmentId(v === 'none' ? null : v)}>
-                    <SelectTrigger className="w-[180px] h-9">
+                    <SelectTrigger className="w-full md:w-[180px] h-9">
                         <SelectValue placeholder="Select Environment" />
                     </SelectTrigger>
                     <SelectContent>

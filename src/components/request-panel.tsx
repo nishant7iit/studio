@@ -46,10 +46,10 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
   return (
     <Card className="shadow-sm">
       <CardContent className="p-0">
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           <Select value={request.method} onValueChange={handleMethodChange}>
             <SelectTrigger className={cn(
-              "w-[130px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 font-mono text-sm",
+              "w-full md:w-[130px] rounded-r-none md:border-r-0 focus:ring-0 focus:ring-offset-0 font-mono text-sm",
               getMethodClass(request.method)
             )}>
               <SelectValue placeholder="Method" />
@@ -64,14 +64,14 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
               <SelectItem value="OPTIONS" className={getMethodClass('OPTIONS')}>OPTIONS</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex-1 relative">
+          <div className="flex-1 flex">
             <Input
                 placeholder="https://api.example.com/data"
                 value={request.url}
                 onChange={e => onUpdateRequest({ url: e.target.value })}
-                className="font-code rounded-l-none pr-28 h-full"
+                className="font-code rounded-l-none h-full flex-1"
             />
-             <Button onClick={onSend} disabled={loading} className="w-[100px] absolute right-1 top-1/2 -translate-y-1/2 h-8">
+             <Button onClick={onSend} disabled={loading} className="w-[100px] h-full rounded-l-none">
               {loading ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
               Send
             </Button>
