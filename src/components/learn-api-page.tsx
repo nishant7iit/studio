@@ -3,7 +3,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map, Mailbox, Mail, FilePlus, Replace, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -394,6 +394,23 @@ const InteractiveDiscoverySection = () => {
     );
 };
 
+const MethodVisualization = ({ method, description, color, children }: { method: string, description: string, color: string, children: React.ReactNode }) => (
+    <motion.div
+        whileHover="hover"
+        className="relative p-6 bg-card rounded-lg border text-center overflow-hidden"
+    >
+        <div className="relative z-10">
+            <div className="flex justify-center items-center h-20 mb-4 text-gray-400">
+                {children}
+            </div>
+            <h4 className="font-bold text-lg mb-2 flex items-center justify-center gap-2">
+                <span className={cn("text-xs font-mono px-2 py-1 rounded-md", color)}>{method}</span>
+            </h4>
+            <p className="text-muted-foreground text-sm">{description}</p>
+        </div>
+    </motion.div>
+);
+
 
 export function LearnApiPage() {
   const router = useRouter();
@@ -432,17 +449,78 @@ export function LearnApiPage() {
                 <p className="max-w-3xl mx-auto text-center text-lg text-muted-foreground mb-12">
                     A request is a structured message you send to the server. It has a few key parts.
                 </p>
-                <div className="space-y-8 max-w-3xl mx-auto">
+                <div className="space-y-12 max-w-4xl mx-auto">
                     <div>
-                        <h3 className="text-2xl font-semibold mb-2">1. The Method</h3>
-                        <p>The verb of your request. It tells the server what kind of action you want to perform. Common methods include:</p>
-                        <ul className="list-disc list-inside mt-2 text-muted-foreground">
-                            <li><span className="font-bold text-green-500">GET:</span> Retrieve data (e.g., get a user's profile).</li>
-                            <li><span className="font-bold text-orange-500">POST:</span> Create new data (e.g., post a new tweet).</li>
-                            <li><span className="font-bold text-blue-500">PUT:</span> Update existing data completely.</li>
-                            <li><span className="font-bold text-purple-500">PATCH:</span> Partially update existing data.</li>
-                            <li><span className="font-bold text-red-500">DELETE:</span> Remove data.</li>
-                        </ul>
+                        <h3 className="text-2xl font-semibold mb-4 text-center">1. The Method</h3>
+                        <p className="text-center text-muted-foreground mb-8">The verb of your request. It tells the server what kind of action you want to perform.</p>
+                        <div className="grid md:grid-cols-2 gap-8">
+                             <MethodVisualization method="GET" description="Retrieve data (e.g., get a user's profile)." color="bg-green-500/10 text-green-500">
+                                <div className="relative">
+                                    <Mailbox className="w-16 h-16" />
+                                    <motion.div
+                                        className="absolute top-0 left-0"
+                                        variants={{
+                                            initial: { rotateX: 0, y: 0, originY: 'top' },
+                                            hover: { rotateX: -90, y: -2, originY: 'top' }
+                                        }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <div className="w-16 h-8 bg-gray-500 border-b-2 border-gray-600 rounded-t-md"></div>
+                                    </motion.div>
+                                    <motion.div
+                                        className="absolute -top-4 -right-8"
+                                        variants={{
+                                            initial: { opacity: 0, y: 10, x: -10 },
+                                            hover: { opacity: 1, y: -10, x: 0 }
+                                        }}
+                                        transition={{ delay: 0.1 }}
+                                    >
+                                        <Mail className="w-10 h-10 text-primary" />
+                                    </motion.div>
+                                </div>
+                            </MethodVisualization>
+                            <MethodVisualization method="POST" description="Create new data (e.g., post a new tweet)." color="bg-orange-500/10 text-orange-500">
+                                <div className="relative w-24 h-24">
+                                     <FileText className="w-16 h-16 text-gray-400" />
+                                     <motion.div
+                                        variants={{
+                                            initial: { scale: 0, opacity: 0, x: 20 },
+                                            hover: { scale: 1, opacity: 1, x: 0 }
+                                        }}
+                                     >
+                                        <FilePlus className="w-12 h-12 absolute bottom-0 right-0 text-accent"/>
+                                     </motion.div>
+                                </div>
+                            </MethodVisualization>
+                             <MethodVisualization method="PUT" description="Update existing data completely." color="bg-blue-500/10 text-blue-500">
+                                <div className="relative w-24 h-24 flex items-center justify-center">
+                                    <FileText className="w-16 h-16 text-gray-400" />
+                                    <motion.div
+                                        className="absolute"
+                                        variants={{
+                                            initial: { opacity: 0, rotate: -90, scale: 0.5 },
+                                            hover: { opacity: 1, rotate: 0, scale: 1 }
+                                        }}
+                                    >
+                                      <Replace className="w-12 h-12 text-primary"/>
+                                    </motion.div>
+                                </div>
+                            </MethodVisualization>
+                            <MethodVisualization method="DELETE" description="Remove data." color="bg-red-500/10 text-red-500">
+                                <div className="relative w-24 h-24 flex items-center justify-center">
+                                     <FileText className="w-16 h-16 text-gray-400" />
+                                    <motion.div 
+                                      className="absolute text-destructive"
+                                      variants={{
+                                          initial: { pathLength: 0, opacity: 0 },
+                                          hover: { pathLength: 1, opacity: 1}
+                                      }}
+                                    >
+                                      <Trash2 className="w-12 h-12"/>
+                                    </motion.div>
+                                </div>
+                            </MethodVisualization>
+                        </div>
                     </div>
                     <div>
                         <h3 className="text-2xl font-semibold mb-2">2. The URL (Endpoint)</h3>
@@ -528,3 +606,5 @@ export function LearnApiPage() {
     </div>
   );
 }
+
+    
