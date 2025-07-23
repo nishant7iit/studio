@@ -621,11 +621,11 @@ export function LearnApiPage() {
                     <div>
                         <h3 className="text-2xl font-semibold mb-2">1. Status Code</h3>
                         <p>A 3-digit number indicating the result of the request. They're grouped by their first digit:</p>
-                        <ul className="list-disc list-inside mt-2 text-muted-foreground">
-                            <li><span className="font-bold text-green-500">2xx (e.g. 200 OK):</span> Success!</li>
-                            <li><span className="font-bold text-blue-500">3xx (e.g. 301 Moved Permanently):</span> Redirection.</li>
-                            <li><span className="font-bold text-yellow-500">4xx (e.g. 404 Not Found):</span> Client error (you did something wrong).</li>
-                            <li><span className="font-bold text-red-500">5xx (e.g. 500 Internal Server Error):</span> Server error (they did something wrong).</li>
+                        <ul className="list-disc list-inside mt-2 text-muted-foreground space-y-1">
+                            <li><span className="font-bold text-green-500">2xx (e.g. 200 OK):</span> Success! Everything went as planned. 😊</li>
+                            <li><span className="font-bold text-blue-500">3xx (e.g. 301 Moved Permanently):</span> Redirection. You're being sent somewhere else.</li>
+                            <li><span className="font-bold text-yellow-500">4xx (e.g. 404 Not Found):</span> Client error. You made a mistake in your request. 😕</li>
+                            <li><span className="font-bold text-red-500">5xx (e.g. 500 Internal Server Error):</span> Server error. Something went wrong on their end. 😱</li>
                         </ul>
                     </div>
                     <div>
