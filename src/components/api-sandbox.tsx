@@ -19,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { Input } from './ui/input';
 import { EnvironmentEditor } from './environment-editor';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -37,6 +38,9 @@ export function ApiSandbox() {
   const [isCodeGenOpen, setIsCodeGenOpen] = useState(false);
   const [isCodeGenLoading, setIsCodeGenLoading] = useState(false);
   const [showCorsWarning, setShowCorsWarning] = useState(false);
+  
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isLargeDesktop = useMediaQuery("(min-width: 1024px)");
 
   useEffect(() => {
     const generateId = (): string => {
@@ -341,17 +345,20 @@ export function ApiSandbox() {
         </Sidebar>
         <div className="flex flex-col h-screen flex-1">
             <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
-              <SidebarTrigger/>
-               <Input
-                value={activeRequest.name}
-                onChange={e => updateRequest({ name: e.target.value })}
-                className="font-semibold text-base border-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 h-9 flex-1"
-                aria-label="Request Name"
-              />
+              <div className='flex items-center gap-2'>
+                <SidebarTrigger/>
+                 <Input
+                  value={activeRequest.name}
+                  onChange={e => updateRequest({ name: e.target.value })}
+                  className="font-semibold text-base border-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 h-9 flex-1 w-full md:w-auto"
+                  aria-label="Request Name"
+                />
+              </div>
               <div className="flex items-center gap-2">
                  <Select value={activeEnvironmentId || 'none'} onValueChange={v => setActiveEnvironmentId(v === 'none' ? null : v)}>
-                    <SelectTrigger className="w-full md:w-[180px] h-9">
-                        <SelectValue placeholder="Select Environment" />
+                    <SelectTrigger className="w-auto md:w-[180px] h-9">
+                        <Globe className="w-4 h-4 text-muted-foreground" />
+                        {isDesktop && <SelectValue placeholder="Select Environment" />}
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="none">No Environment</SelectItem>
@@ -361,27 +368,27 @@ export function ApiSandbox() {
                     </SelectContent>
                  </Select>
 
-                <Button variant="outline" size="sm" onClick={handleSaveRequest}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save
+                <Button variant={isLargeDesktop ? "outline" : "icon"} size="sm" onClick={handleSaveRequest} title="Save Request">
+                  <Save className={isLargeDesktop ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+                  {isLargeDesktop && 'Save'}
                 </Button>
                  <Link href="/learn">
-                    <Button variant="outline" size="sm">
-                        <GraduationCap className="mr-2 h-4 w-4" />
-                        Learn APIs
+                    <Button variant={isLargeDesktop ? "outline" : "icon"} size="sm" title="Learn APIs">
+                        <GraduationCap className={isLargeDesktop ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+                        {isLargeDesktop && 'Learn APIs'}
                     </Button>
                 </Link>
                 <a href="https://free-apis.github.io/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm">
-                        <List className="mr-2 h-4 w-4" />
-                        Free APIs
+                    <Button variant={isLargeDesktop ? "outline" : "icon"} size="sm" title="Free APIs List">
+                        <List className={isLargeDesktop ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+                        {isLargeDesktop && 'Free APIs'}
                     </Button>
                 </a>
                 <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Code className="mr-2 h-4 w-4" />
-                      Code
+                    <Button variant={isLargeDesktop ? "outline" : "icon"} size="sm" title="Generate Code">
+                      <Code className={isLargeDesktop ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+                      {isLargeDesktop && 'Code'}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">

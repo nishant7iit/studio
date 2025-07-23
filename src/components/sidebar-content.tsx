@@ -4,13 +4,14 @@
 import { ApiRequest, CollectionItem, RequestHistoryItem, Environment } from "@/lib/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Button } from "./ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { History, Folder, Plus, MoreVertical, Trash2, FilePlus, Edit, X, Globe } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { EnvironmentEditor } from "./environment-editor";
+import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 
 interface SidebarContentProps {
   history: RequestHistoryItem[];
@@ -145,7 +146,7 @@ export function SidebarContent({
                         onClick={(e) => e.stopPropagation()}
                       />
                     ) : (
-                      <span className="text-sm font-medium">{item.name}</span>
+                      <span className="text-sm font-medium truncate">{item.name}</span>
                     )}
                 </div>
             </AccordionTrigger>
@@ -193,81 +194,99 @@ export function SidebarContent({
 
   return (
     <>
-    <Tabs defaultValue="collections" className="w-full p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:border-t">
-       <div className="group-data-[collapsible=icon]:hidden">
-        <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="collections">Collections</TabsTrigger>
-            <TabsTrigger value="environments">Environments</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-        </TabsList>
-       </div>
-       <TabsContent value="collections" className="mt-2 group-data-[collapsible=icon]:hidden">
-            <div className="flex justify-end mb-2">
-                <Button variant="ghost" size="sm" onClick={handleAddCollection}>
-                    <Plus className="w-4 h-4 mr-2"/>
-                    New Collection
-                </Button>
+      <ScrollArea className="h-full group-data-[collapsible=icon]:hidden">
+        <div className="p-2 space-y-4">
+            {/* Collections Section */}
+            <div>
+              <div className="flex justify-between items-center mb-1 px-2">
+                  <h2 className="text-sm font-semibold tracking-tight flex items-center gap-2">
+                    <Folder className="w-4 h-4" />
+                    Collections
+                  </h2>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleAddCollection}>
+                      <Plus className="w-4 h-4"/>
+                  </Button>
+              </div>
+              <Accordion type="multiple" className="w-full space-y-1">
+                  {collections.map(renderCollection)}
+              </Accordion>
+              {collections.length === 0 && <p className="text-xs text-muted-foreground p-2">No collections yet.</p>}
             </div>
-            <Accordion type="multiple" className="w-full space-y-1">
-                {collections.map(renderCollection)}
-            </Accordion>
-        </TabsContent>
-        <TabsContent value="environments" className="mt-2 group-data-[collapsible=icon]:hidden">
-           <div className="flex justify-end mb-2">
-                <Button variant="ghost" size="sm" onClick={handleAddEnvironment}>
-                    <Plus className="w-4 h-4 mr-2"/>
-                    New Environment
-                </Button>
+
+            <Separator />
+
+            {/* Environments Section */}
+            <div>
+              <div className="flex justify-between items-center mb-1 px-2">
+                  <h2 className="text-sm font-semibold tracking-tight flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    Environments
+                  </h2>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleAddEnvironment}>
+                      <Plus className="w-4 h-4"/>
+                  </Button>
+              </div>
+              <div className="space-y-1">
+                  {environments.map(env => (
+                      <div key={env.id} className="group flex items-center justify-between rounded-md text-sm font-medium hover:bg-sidebar-accent">
+                          <button className="flex items-center gap-2 p-2 flex-1 text-left" onClick={() => setEditingEnvironment(env)}>
+                              <span className="truncate flex-1">{env.name}</span>
+                          </button>
+                          <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
+                                      <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                  <DropdownMenuItem onClick={() => setEditingEnvironment(env)}>
+                                      <Edit className="w-4 h-4 mr-2" /> Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleRemoveEnvironment(env.id)} className="text-destructive">
+                                      <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                  </DropdownMenuItem>
+                              </DropdownMenuContent>
+                          </DropdownMenu>
+                      </div>
+                  ))}
+                  {environments.length === 0 && <p className="text-xs text-muted-foreground p-2">No environments yet.</p>}
+              </div>
             </div>
-            <div className="space-y-1">
-                {environments.map(env => (
-                    <div key={env.id} className="group flex items-center justify-between rounded-md text-sm font-medium hover:bg-sidebar-accent">
-                        <button className="flex items-center gap-2 p-2 flex-1 text-left" onClick={() => setEditingEnvironment(env)}>
-                            <Globe className="w-4 h-4 text-accent"/>
-                            <span className="truncate flex-1">{env.name}</span>
-                        </button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
-                                    <MoreVertical className="w-4 h-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => setEditingEnvironment(env)}>
-                                    <Edit className="w-4 h-4 mr-2" /> Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleRemoveEnvironment(env.id)} className="text-destructive">
-                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                ))}
+
+            <Separator />
+            
+            {/* History Section */}
+            <div>
+              <div className="flex justify-between items-center mb-1 px-2">
+                  <h2 className="text-sm font-semibold tracking-tight flex items-center gap-2">
+                    <History className="w-4 h-4" />
+                    History
+                  </h2>
+              </div>
+              <div className="space-y-1">
+              {history.map(item => (
+                  <button
+                      key={item.id}
+                      onClick={() => onSelectRequest(item.request)}
+                      data-active={activeRequestId === item.request.id}
+                      className="w-full text-left p-2 rounded-md hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent"
+                  >
+                      <div className="flex items-center gap-2">
+                          <span className={`font-mono text-xs w-12 text-left font-bold ${getMethodClass(item.request.method)}`}>
+                              {item.request.method}
+                          </span>
+                          <span className="truncate flex-1 text-sm">{item.request.name || item.request.url}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 pl-[56px]">
+                      {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
+                      </div>
+                  </button>
+              ))}
+              {history.length === 0 && <p className="text-xs text-muted-foreground p-2">No history yet.</p>}
+              </div>
             </div>
-        </TabsContent>
-        <TabsContent value="history" className="mt-2 group-data-[collapsible=icon]:hidden">
-            <div className="space-y-1">
-            {history.map(item => (
-                <button
-                    key={item.id}
-                    onClick={() => onSelectRequest(item.request)}
-                    data-active={activeRequestId === item.request.id}
-                    className="w-full text-left p-2 rounded-md hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent"
-                >
-                    <div className="flex items-center gap-2">
-                        <span className={`font-mono text-xs w-12 text-left font-bold ${getMethodClass(item.request.method)}`}>
-                            {item.request.method}
-                        </span>
-                        <span className="truncate flex-1">{item.request.name || item.request.url}</span>
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1 pl-[56px]">
-                    {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
-                    </div>
-                </button>
-            ))}
-            </div>
-        </TabsContent>
-    </Tabs>
+        </div>
+      </ScrollArea>
     {editingEnvironment && (
         <EnvironmentEditor
             environment={editingEnvironment}
