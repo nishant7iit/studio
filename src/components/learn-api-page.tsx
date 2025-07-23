@@ -23,6 +23,11 @@ import {
   FilePlus,
   FileCheck,
   Trash2,
+  KeyRound,
+  Lock,
+  BookUser,
+  ChevronDown,
+  ChevronRight as ChevronRightIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -55,7 +60,7 @@ const HeroSection = () => {
                 repeat: Infinity, 
                 ease: 'linear'
               }}
-              style={{ offsetMotion: `path("M0,0 H${(document.querySelector('.relative.w-full.h-px')?.clientWidth || 0)}px")` }}
+              style={{ motionPath: { path: "M0,0 H1000" } }}
             />
           ))}
         </div>
@@ -307,7 +312,7 @@ const InteractiveDiscoverySection = () => {
   );
 };
 
-// Part 5: Anatomy of a Request
+// Part 5: Anatomy of a Request Intro
 const AnatomyOfRequestSection = () => {
   const MethodCard = ({ icon, title, color, children }: { icon: React.ReactNode, title: string, color: string, children: React.ReactNode }) => (
     <motion.div 
@@ -361,6 +366,155 @@ const AnatomyOfRequestSection = () => {
 };
 
 
+// Part 6: Deconstructing the Request
+const UrlBreakdown = () => (
+    <div className="bg-card border rounded-lg p-6 shadow-md font-code text-sm md:text-base">
+        <p className="text-muted-foreground mb-4 font-sans text-sm">A URL (Uniform Resource Locator) is the address you use to find a specific resource on the internet.</p>
+        <div className="break-all p-4 bg-muted rounded-md flex flex-col md:flex-row gap-x-1">
+            <span className="text-purple-500">https://</span>
+            <span className="text-blue-500">api.example.com</span>
+            <span className="text-green-500">/v1/users</span>
+            <span className="text-orange-500">?id=123</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div><span className="text-purple-500 font-bold">Protocol:</span> The method for exchanging data (e.g., https).</div>
+            <div><span className="text-blue-500 font-bold">Domain:</span> The server's address (e.g., api.example.com).</div>
+            <div><span className="text-green-500 font-bold">Path:</span> The specific resource you want (e.g., /v1/users).</div>
+            <div><span className="text-orange-500 font-bold">Query Params:</span> Key-value pairs to filter or specify your request (e.g., ?id=123).</div>
+        </div>
+    </div>
+);
+
+const JsonViewerNode = ({ nodeKey, value, isRoot = false }: { nodeKey: string, value: any, isRoot?: boolean }) => {
+    const [isExpanded, setIsExpanded] = useState(isRoot);
+    const isObject = typeof value === 'object' && value !== null;
+    const braceOpen = Array.isArray(value) ? '[' : '{';
+    const braceClose = Array.isArray(value) ? ']' : '}';
+
+    if (!isObject) {
+        return (
+            <div className="flex items-start">
+                <span className="text-blue-500 font-semibold mr-2">{`"${nodeKey}"`}:</span>
+                <span className={typeof value === 'string' ? 'text-green-500' : 'text-purple-500'}>
+                    {typeof value === 'string' ? `"${value}"` : String(value)}
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <div className="flex items-center cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                {isExpanded ? <ChevronDown className="w-4 h-4 mr-1" /> : <ChevronRightIcon className="w-4 h-4 mr-1" />}
+                {!isRoot && <span className="text-blue-500 font-semibold mr-2">{`"${nodeKey}"`}:</span>}
+                <span>{braceOpen}</span>
+            </div>
+            {isExpanded && (
+                <div className="pl-6 border-l ml-2">
+                    {Object.entries(value).map(([key, val]) => (
+                        <JsonViewerNode key={key} nodeKey={key} value={val} />
+                    ))}
+                </div>
+            )}
+            <span>{braceClose}</span>
+        </div>
+    );
+};
+
+const RequestStructureSection = () => {
+    const headers = { "Content-Type": "application/json", "Authorization": "Bearer your_api_key" };
+    const body = { "username": "testuser", "isActive": true };
+
+    return (
+        <div className="py-16">
+            <motion.div initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12 px-4">
+                <h2 className="text-3xl font-bold">Deconstructing the Request</h2>
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Besides the URL and Method, a request has a few more important parts.</p>
+            </motion.div>
+            <div className="container mx-auto px-4 space-y-8">
+                <UrlBreakdown />
+                <div className="grid md:grid-cols-2 gap-8">
+                    <Card className="shadow-md">
+                        <CardContent className="p-6">
+                            <h3 className="text-xl font-bold mb-4">Headers</h3>
+                            <p className="text-sm text-muted-foreground mb-4">Headers provide meta-information about the request, like the format of the data you're sending or your authentication credentials.</p>
+                            <div className="bg-muted p-4 rounded-lg font-code text-sm space-y-1">
+                                {Object.entries(headers).map(([key, value]) => (
+                                    <div key={key}>
+                                        <span className="text-orange-500">{key}:</span> <span className="text-green-500">{`"${value}"`}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="shadow-md">
+                        <CardContent className="p-6">
+                            <h3 className="text-xl font-bold mb-4">Body (Payload)</h3>
+                            <p className="text-sm text-muted-foreground mb-4">The body contains the actual data you want to send to the server, usually for POST or PUT requests. It's often in JSON format.</p>
+                             <div className="bg-muted p-4 rounded-lg font-code text-sm">
+                                <JsonViewerNode nodeKey="body" value={body} isRoot={true} />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Part 7: Visualizing the Response
+const StatusCodeCard = ({ code, emoji, title, color, children }: { code: string, emoji: string, title: string, color: string, children: React.ReactNode }) => (
+    <div className="bg-card border rounded-lg p-6 shadow-md">
+        <div className="flex items-center gap-4 mb-3">
+            <div className={cn("text-4xl", color)}>{emoji}</div>
+            <div>
+                <div className={cn("px-2 py-0.5 rounded-full text-xs font-semibold inline-block", color.replace('text-', 'bg-') + '/20', color)}>
+                    {code}
+                </div>
+                <h3 className="text-xl font-bold mt-1">{title}</h3>
+            </div>
+        </div>
+        <p className="text-sm text-muted-foreground">{children}</p>
+    </div>
+);
+
+const ResponseAnatomySection = () => (
+    <div className="py-16 bg-muted rounded-lg">
+        <motion.div initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12 px-4">
+            <h2 className="text-3xl font-bold">Anatomy of a Response</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">After the server processes your request, it sends back a response. Here’s what you get.</p>
+        </motion.div>
+        <div className="container mx-auto px-4 space-y-8">
+            <div className="grid md:grid-cols-3 gap-6">
+                <StatusCodeCard code="2xx" emoji="😊" title="Success" color="text-green-500">
+                    Everything worked as expected! The server has fulfilled your request.
+                </StatusCodeCard>
+                <StatusCodeCard code="4xx" emoji="😕" title="Client Error" color="text-yellow-500">
+                    You made a mistake. This could be a bad URL, missing authentication, or invalid data.
+                </StatusCodeCard>
+                <StatusCodeCard code="5xx" emoji="😱" title="Server Error" color="text-red-500">
+                    The server messed up. Something went wrong on their end, and they couldn't fulfill your request.
+                </StatusCodeCard>
+            </div>
+             <div className="grid md:grid-cols-2 gap-8 pt-8">
+                    <Card className="shadow-md">
+                        <CardContent className="p-6">
+                            <h3 className="text-xl font-bold mb-4">Response Headers</h3>
+                            <p className="text-sm text-muted-foreground">Similar to request headers, these provide meta-information about the response, like the data format or server details.</p>
+                        </CardContent>
+                    </Card>
+                    <Card className="shadow-md">
+                        <CardContent className="p-6">
+                            <h3 className="text-xl font-bold mb-4">Response Body</h3>
+                            <p className="text-sm text-muted-foreground">This is the main content you asked for, usually in a structured format like JSON that your application can easily parse and use.</p>
+                        </CardContent>
+                    </Card>
+                </div>
+        </div>
+    </div>
+);
+
+
 export function LearnApiPage() {
   const router = useRouter();
   
@@ -387,11 +541,11 @@ export function LearnApiPage() {
         <ApiFundamentalsSection />
         <InteractiveDiscoverySection />
         <AnatomyOfRequestSection />
+        <RequestStructureSection />
+        <ResponseAnatomySection />
       </main>
 
       <ApiChatbot />
     </div>
   );
 }
-
-    
