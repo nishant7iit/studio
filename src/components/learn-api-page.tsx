@@ -3,7 +3,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, User, FileText, Server, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book } from 'lucide-react';
+import { ArrowLeft, BookOpen, User, FileText, Server, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -44,8 +44,8 @@ const Section = ({ children, className }: { children: React.ReactNode, className
     </motion.section>
 );
 
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-bold text-center mb-8 text-primary">{children}</motion.h2>
+const SectionTitle = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+    <motion.h2 variants={itemVariants} className={cn("text-3xl md:text-4xl font-bold text-center mb-8 text-primary", className)}>{children}</motion.h2>
 );
 
 const CodeBlock = ({ children }: { children: React.ReactNode }) => (
@@ -192,14 +192,121 @@ const HeroSection = () => {
     );
 }
 
+const PrerequisitesSection = () => {
+    const prerequisites = [
+        {
+            icon: Globe,
+            title: "What is the Internet?",
+            description: "A global network of computers that allows us to share information and communicate. Think of it as the giant road system for data.",
+            animation: (
+                <div className="w-full h-24 flex items-center justify-center">
+                    <motion.div variants={itemVariants} className="relative w-48 h-full">
+                        {[...Array(3)].map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute bg-primary/50 rounded-full"
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.2 + 0.5, duration: 0.5 }}
+                                style={{
+                                    width: i === 0 ? 40 : 20,
+                                    height: i === 0 ? 40 : 20,
+                                    top: i === 0 ? '30%' : `${20 + i * 25}%`,
+                                    left: i === 0 ? '40%' : `${10 + i * 25}%`,
+                                }}
+                            />
+                        ))}
+                        <motion.svg className="absolute w-full h-full" initial="hidden" animate="visible">
+                            <motion.line x1="30%" y1="45%" x2="50%" y2="40%" stroke="hsl(var(--primary))" variants={arrowVariants} />
+                             <motion.line x1="75%" y1="55%" x2="50%" y2="40%" stroke="hsl(var(--primary))" variants={arrowVariants} transition={{delay: 0.2}}/>
+                        </motion.svg>
+                    </motion.div>
+                </div>
+            )
+        },
+        {
+            icon: Handshake,
+            title: "Client vs. Server",
+            description: "A client (like your browser) asks for information, and a server provides it. It's a fundamental two-way conversation.",
+            animation: (
+                 <div className="w-full h-24 flex items-center justify-around">
+                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center">
+                        <User className="w-8 h-8 text-primary"/>
+                        <span className="text-xs font-bold">Client</span>
+                     </motion.div>
+                      <motion.div variants={itemVariants} className="flex flex-col items-center">
+                        <p className="text-xs">Request →</p>
+                        <p className="text-xs">← Response</p>
+                      </motion.div>
+                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center">
+                        <Server className="w-8 h-8 text-accent"/>
+                        <span className="text-xs font-bold">Server</span>
+                     </motion.div>
+                 </div>
+            )
+        },
+        {
+            icon: Database,
+            title: "What is Data?",
+            description: "Simply put, data is information. For APIs, this is often structured in a specific format, like JSON, so computers can easily read it.",
+             animation: (
+                 <div className="w-full h-24 flex items-center justify-center">
+                    <motion.div variants={itemVariants} className="font-code text-xs bg-gray-800 p-2 rounded-md">
+                        <pre>
+                            <code>{`{
+  "name": "Alex",
+  "isStudent": true
+}`}</code>
+                        </pre>
+                    </motion.div>
+                 </div>
+             )
+        }
+    ];
+
+    return (
+        <Section>
+            <SectionTitle>First, The Foundations</SectionTitle>
+            <motion.p variants={itemVariants} className="max-w-2xl mx-auto text-center text-muted-foreground mb-12">
+                Before we talk about APIs, let's quickly cover the basic concepts they are built upon.
+            </motion.p>
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {prerequisites.map((item, index) => (
+                    <motion.div key={index} variants={itemVariants}>
+                        <Card className="h-full">
+                            <CardHeader className="flex flex-row items-center gap-4">
+                                <div className="bg-primary/10 p-3 rounded-full">
+                                    <item.icon className="w-6 h-6 text-primary" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg">{item.title}</CardTitle>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground text-sm mb-4">{item.description}</p>
+                                {item.animation}
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                ))}
+            </div>
+        </Section>
+    );
+};
+
 
 export function LearnApiPage() {
   const router = useRouter();
+  
+  const handleBackToSandbox = () => {
+    router.push('/');
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-            <Button variant="ghost" onClick={() => router.push('/')}>
+            <Button variant="ghost" onClick={handleBackToSandbox}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Sandbox
             </Button>
@@ -210,6 +317,8 @@ export function LearnApiPage() {
       <main className="container mx-auto px-4 py-8">
         
         <HeroSection />
+        
+        <PrerequisitesSection />
 
         <Card className="mb-8">
           <CardHeader>
@@ -383,9 +492,9 @@ export function LearnApiPage() {
                    That's the core of it! You now understand the fundamental request-response cycle of APIs. The best way to learn is by doing.
                 </motion.p>
                 <motion.div variants={itemVariants}>
-                    <Button size="lg" onClick={() => router.push('/')}>
+                    <Button size="lg" onClick={handleBackToSandbox}>
                         Go to the Sandbox & Start Practicing
-                        <ArrowLeft className="ml-2 h-4 w-4" />
+                        <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                 </motion.div>
             </div>
