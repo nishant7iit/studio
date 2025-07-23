@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ApiRequest, CollectionItem, RequestHistoryItem } from "@/lib/types";
@@ -97,41 +98,44 @@ export function SidebarContent({ history, collections, onSelectRequest, setColle
 
   const renderCollection = (item: CollectionItem) => (
     <AccordionItem value={item.id} key={item.id} className="border-none">
-       <AccordionTrigger className="hover:no-underline hover:bg-sidebar-accent rounded-md px-2 py-1.5 group">
-         <div className="flex items-center gap-2 flex-1">
-            <Folder className="w-4 h-4 text-accent"/>
-            {editingCollectionId === item.id ? (
-              <Input 
-                value={collectionName}
-                onChange={(e) => setCollectionName(e.target.value)}
-                onBlur={() => handleSaveCollectionName(item.id)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCollectionName(item.id)}}
-                className="h-7 text-sm"
-                autoFocus
-              />
-            ) : (
-              <span className="text-sm font-medium">{item.name}</span>
-            )}
-         </div>
-         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                 <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
-                    <MoreVertical className="w-4 h-4" />
-                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleAddRequestToCollection(item.id)}>
-                    <FilePlus className="w-4 h-4 mr-2" /> Add Request
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStartEditing(item)}>
-                    <Edit className="w-4 h-4 mr-2" /> Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleRemoveCollection(item.id)} className="text-destructive">
-                    <Trash2 className="w-4 h-4 mr-2" /> Delete Collection
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-         </DropdownMenu>
-       </AccordionTrigger>
+        <div className="flex items-center group hover:bg-sidebar-accent rounded-md">
+            <AccordionTrigger className="hover:no-underline px-2 py-1.5 flex-1">
+                <div className="flex items-center gap-2">
+                    <Folder className="w-4 h-4 text-accent"/>
+                    {editingCollectionId === item.id ? (
+                      <Input 
+                        value={collectionName}
+                        onChange={(e) => setCollectionName(e.target.value)}
+                        onBlur={() => handleSaveCollectionName(item.id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCollectionName(item.id)}}
+                        className="h-7 text-sm"
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <span className="text-sm font-medium">{item.name}</span>
+                    )}
+                </div>
+            </AccordionTrigger>
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                     <Button variant="ghost" size="icon" className="h-6 w-6 mr-1 opacity-0 group-hover:opacity-100">
+                        <MoreVertical className="w-4 h-4" />
+                     </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleAddRequestToCollection(item.id)}>
+                        <FilePlus className="w-4 h-4 mr-2" /> Add Request
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStartEditing(item)}>
+                        <Edit className="w-4 h-4 mr-2" /> Rename
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRemoveCollection(item.id)} className="text-destructive">
+                        <Trash2 className="w-4 h-4 mr-2" /> Delete Collection
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+             </DropdownMenu>
+       </div>
        <AccordionContent className="pl-4 pt-1">
          <div className="space-y-1">
           {item.children?.map(child => (
