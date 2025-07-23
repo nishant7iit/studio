@@ -22,9 +22,13 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  const isJsonResponse = response?.headers['content-type']?.includes('application/json');
+
+  const prettyRaw = isJsonResponse ? JSON.stringify(response.data, null, 2) : response?.raw ?? '';
+
   const handleCopy = () => {
-    if (!response || !response.raw) return;
-    navigator.clipboard.writeText(response.raw);
+    if (!response) return;
+    navigator.clipboard.writeText(prettyRaw);
     setCopied(true);
     toast({ title: 'Response body copied!' });
     setTimeout(() => setCopied(false), 2000);
@@ -76,15 +80,15 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
         <div className="flex justify-between items-center">
           <CardTitle>Response</CardTitle>
           <div className="flex items-center gap-4 text-xs">
-            <Badge variant="outline" className={`flex items-center gap-2 border-${getStatusColor(response.status)}/30`}>
+            <Badge variant="outline" className={`flex items-center gap-2 border-current ${getStatusColor(response.status).replace('bg-', 'text-')}`}>
               <span className={`h-2 w-2 rounded-full ${getStatusColor(response.status)}`}></span>
               Status: {response.status} {response.statusText}
             </Badge>
             <Badge variant="outline" className="flex items-center gap-1">
-              <Clock className="w-4 h-4" /> Time: {response.time}ms
+              <Clock className="w-3 h-3" /> Time: {response.time}ms
             </Badge>
             <Badge variant="outline" className="flex items-center gap-1">
-              <HardDrive className="w-4 h-4" /> Size: {(response.size / 1024).toFixed(2)} KB
+              <HardDrive className="w-3 h-3" /> Size: {(response.size / 1024).toFixed(2)} KB
             </Badge>
           </div>
         </div>
@@ -97,7 +101,7 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
           </TabsList>
           <TabsContent value="body" className="mt-4 flex-1 min-h-0">
              <Tabs defaultValue="tree" className="h-full flex flex-col">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center shrink-0">
                 <TabsList>
                   <TabsTrigger value="tree">Tree</TabsTrigger>
                   <TabsTrigger value="raw">Raw</TabsTrigger>
@@ -113,7 +117,7 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
               </TabsContent>
               <TabsContent value="raw" className="mt-2 flex-1 min-h-0">
                 <ScrollArea className="h-full bg-secondary rounded-md">
-                   <pre className="p-4 text-sm font-code whitespace-pre-wrap break-all">{response.raw}</pre>
+                   <pre className="p-4 text-sm font-code whitespace-pre-wrap break-all">{prettyRaw}</pre>
                 </ScrollArea>
               </TabsContent>
             </Tabs>

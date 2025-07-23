@@ -17,10 +17,8 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const generateId = (): string => {
-    if (typeof window !== 'undefined') {
-      return `req_${Math.random().toString(36).substring(2, 11)}`;
-    }
-    return `req_${new Date().getTime().toString()}`;
+    // This function is safe to use on the client side now
+    return `id_${Math.random().toString(36).substring(2, 11)}`;
 };
 
 export function ApiSandbox() {
@@ -39,17 +37,20 @@ export function ApiSandbox() {
   const [showCorsWarning, setShowCorsWarning] = useState(false);
 
   useEffect(() => {
-    const defaultRequest: ApiRequest = {
-      id: generateId(),
-      name: 'Untitled Request',
-      method: 'GET',
-      url: 'https://jsonplaceholder.typicode.com/todos/1',
-      queryParams: [{ id: `kv_${generateId()}`, key: '', value: '', enabled: true }],
-      headers: [{ id: `kv_${generateId()}`, key: 'Content-Type', value: 'application/json', enabled: true }],
-      body: '',
-      bodyType: 'none',
-    };
-    setActiveRequest(defaultRequest);
+    // Only run on the client
+    if (typeof window !== 'undefined') {
+        const defaultRequest: ApiRequest = {
+          id: generateId(),
+          name: 'Untitled Request',
+          method: 'GET',
+          url: 'https://jsonplaceholder.typicode.com/todos/1',
+          queryParams: [{ id: generateId(), key: '', value: '', enabled: true }],
+          headers: [{ id: generateId(), key: 'Content-Type', value: 'application/json', enabled: true }],
+          body: '',
+          bodyType: 'none',
+        };
+        setActiveRequest(defaultRequest);
+    }
   }, []);
 
 

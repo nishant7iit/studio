@@ -43,10 +43,10 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
   return (
     <Card className="shadow-sm">
       <CardContent className="p-0">
-        <div className="flex gap-0">
+        <div className="flex">
           <Select value={request.method} onValueChange={handleMethodChange}>
             <SelectTrigger className={cn(
-              "w-[130px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 font-mono",
+              "w-[130px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 font-mono text-sm",
               getMethodClass(request.method)
             )}>
               <SelectValue placeholder="Method" />
@@ -66,7 +66,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
                 placeholder="https://api.example.com/data"
                 value={request.url}
                 onChange={e => onUpdateRequest({ url: e.target.value })}
-                className="font-code rounded-l-none pr-28 text-base"
+                className="font-code rounded-l-none pr-28 h-full"
             />
              <Button onClick={onSend} disabled={loading} className="w-[100px] absolute right-1 top-1/2 -translate-y-1/2 h-8">
               {loading ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
