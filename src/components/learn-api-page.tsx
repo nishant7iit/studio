@@ -1,14 +1,17 @@
 
+
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, User, FileText, Server, CheckCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, User, FileText, Server, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ApiChatbot } from './api-chatbot';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { Progress } from './ui/progress';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -28,7 +31,6 @@ const arrowVariants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: { pathLength: 1, opacity: 1, transition: { duration: 1, ease: "easeInOut" } }
 }
-
 
 const Section = ({ children, className }: { children: React.ReactNode, className?: string }) => (
     <motion.section 
@@ -52,6 +54,145 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
     </div>
 );
 
+
+const AnimatedDataFlow = () => {
+    return (
+        <div className="relative w-full h-32 flex items-center justify-center">
+            {/* Client */}
+            <motion.div 
+                className="z-10 flex flex-col items-center"
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+            >
+                <User className="w-10 h-10 text-primary" />
+                <span className="text-sm mt-1">You</span>
+            </motion.div>
+
+            {/* Server */}
+            <motion.div 
+                className="z-10 flex flex-col items-center"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+            >
+                <Server className="w-10 h-10 text-accent" />
+                <span className="text-sm mt-1">Server</span>
+            </motion.div>
+
+            {/* Connecting Line */}
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-600" />
+            
+            {/* Data Packets */}
+            <motion.div 
+                className="absolute top-1/2 -mt-1 w-3 h-2 bg-primary rounded-full"
+                animate={{
+                    x: [-60, 60],
+                    opacity: [1, 0],
+                    transition: {
+                        repeat: Infinity,
+                        duration: 3,
+                        ease: "linear"
+                    }
+                }}
+            />
+            <motion.div 
+                className="absolute top-1/2 -mt-1 w-3 h-2 bg-accent rounded-full"
+                animate={{
+                    x: [60, -60],
+                    opacity: [1, 0],
+                    transition: {
+                        repeat: Infinity,
+                        duration: 3,
+                        delay: 1.5,
+                        ease: "linear"
+                    }
+                }}
+            />
+        </div>
+    );
+};
+
+const QuickAccessMenu = () => {
+    const menuItems = [
+        { name: "Fundamentals", icon: Book },
+        { name: "Structure", icon: BrainCircuit },
+        { name: "Requests", icon: Rocket },
+        { name: "Responses", icon: Zap }
+    ];
+    return (
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
+            {menuItems.map((item, index) => (
+                <motion.button 
+                    key={item.name}
+                    variants={itemVariants}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/80 rounded-full text-sm"
+                >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                </motion.button>
+            ))}
+        </div>
+    );
+};
+
+
+const HeroSection = () => {
+    const [progress, setProgress] = useState(10);
+    const [mode, setMode] = useState<'beginner' | 'intermediate'>('beginner');
+
+    // In a real app, you would update progress based on scroll or section completion
+    React.useEffect(() => {
+        const timer = setTimeout(() => setProgress(15), 500);
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <div className="bg-gray-900 text-white py-16 px-4 text-center rounded-b-3xl mb-12">
+            <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={sectionVariants}
+            >
+                <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl font-bold mb-4">The Ultimate API Learning Journey</motion.h1>
+                <motion.p variants={itemVariants} className="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+                    From your first request to mastering authentication, we'll guide you every step of the way.
+                </motion.p>
+                
+                <AnimatedDataFlow />
+
+                <motion.div variants={itemVariants} className="max-w-md mx-auto my-8">
+                    <div className="flex justify-between text-sm text-gray-400 mb-1">
+                        <span>Your Progress</span>
+                        <span>{progress}% Complete</span>
+                    </div>
+                    <Progress value={progress} className="h-2 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-accent" />
+                </motion.div>
+                
+                <motion.div variants={itemVariants} className="flex justify-center gap-4 mb-8">
+                    <Button 
+                        onClick={() => setMode('beginner')}
+                        variant={mode === 'beginner' ? 'default' : 'outline'}
+                        className={mode === 'beginner' ? "bg-primary" : "text-white border-gray-600"}
+                    >
+                        Complete Beginner
+                    </Button>
+                    <Button 
+                        onClick={() => setMode('intermediate')}
+                        variant={mode === 'intermediate' ? 'default' : 'outline'}
+                         className={mode === 'intermediate' ? "bg-primary" : "text-white border-gray-600"}
+                    >
+                        I Know Some Basics
+                    </Button>
+                </motion.div>
+                
+                <QuickAccessMenu />
+            </motion.div>
+        </div>
+    );
+}
+
+
 export function LearnApiPage() {
   const router = useRouter();
   return (
@@ -67,6 +208,9 @@ export function LearnApiPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        
+        <HeroSection />
+
         <Card className="mb-8">
           <CardHeader>
             <motion.div variants={sectionVariants} initial="hidden" animate="visible" className="text-center">
@@ -252,5 +396,6 @@ export function LearnApiPage() {
       <ApiChatbot />
     </div>
   );
+}
 
     
