@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ApiChatbot } from './api-chatbot';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -41,6 +42,7 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 );
 
 export function LearnApiPage() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
@@ -179,12 +181,10 @@ export function LearnApiPage() {
                 <p className="max-w-3xl mx-auto text-lg text-muted-foreground mb-8">
                    That's the core of it! You now understand the fundamental request-response cycle of APIs. The best way to learn is by doing.
                 </p>
-                <Link href="/">
-                    <Button size="lg">
-                        Go to the Sandbox & Start Practicing
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                    </Button>
-                </Link>
+                <Button size="lg" onClick={() => router.push('/')}>
+                    Go to the Sandbox & Start Practicing
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                </Button>
             </div>
         </Section>
 
