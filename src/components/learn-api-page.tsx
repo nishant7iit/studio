@@ -18,16 +18,11 @@ import {
   ShoppingCart,
   MessageSquare,
   Map,
-  Badge as BadgeIcon,
   Mail,
   FilePlus,
   FileCheck,
   Trash2,
   KeyRound,
-  Lock,
-  BookUser,
-  ChevronDown,
-  ChevronRight as ChevronRightIcon,
   Users,
   CreditCard,
 } from 'lucide-react';
@@ -35,7 +30,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ApiChatbot } from './api-chatbot';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { cn } from '@/lib/utils';
 import { Badge } from './ui/badge';
 
@@ -269,7 +264,8 @@ const InteractiveDiscoverySection = () => {
   const AppCard = ({ icon, name }: { icon: React.ReactNode, name: string }) => (
     <motion.div
       whileHover="hover"
-      className="relative bg-card border rounded-lg p-8 flex flex-col items-center justify-center text-center shadow-md hover:shadow-xl transition-shadow cursor-pointer"
+      initial="initial"
+      className="relative bg-card border rounded-lg p-8 flex flex-col items-center justify-center text-center shadow-md hover:shadow-xl transition-shadow cursor-pointer h-full"
     >
       <div className="text-primary mb-4">{icon}</div>
       <h3 className="text-xl font-bold">{name}</h3>
@@ -279,7 +275,6 @@ const InteractiveDiscoverySection = () => {
             initial: { opacity: 0, y: 10 },
             hover: { opacity: 1, y: 0 },
           }}
-          initial="initial"
           className="absolute bottom-4"
         >
           <Badge>Powered by APIs</Badge>
@@ -312,75 +307,84 @@ const InteractiveDiscoverySection = () => {
 
 // Part 5: Anatomy of a Request Intro
 const AnatomyOfRequestSection = () => {
-  const MethodCard = ({ icon, title, color, children }: { icon: React.ReactNode, title: string, color: string, children: React.ReactNode }) => (
-    <motion.div 
-      className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
-      whileHover={{ y: -5 }}
-    >
-      <div className="flex items-center gap-4 mb-4">
-        <motion.div
-          className={cn("p-2 rounded-full", color)}
-          whileHover={{ rotate: 15 }}
+    const MethodCard = ({ icon, title, color, children }: { icon: React.ReactNode, title: string, color: string, children: React.ReactNode }) => (
+        <motion.div 
+            className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow h-full"
+            whileHover={{ y: -5 }}
         >
-          {icon}
+            <div className="flex items-center gap-4 mb-4">
+            <motion.div
+                className={cn("p-2 rounded-full", color)}
+                whileHover={{ rotate: 15 }}
+            >
+                {icon}
+            </motion.div>
+            <h3 className={cn("text-xl font-bold", color.replace('bg-', 'text-'))}>{title}</h3>
+            </div>
+            <p className="text-muted-foreground text-sm">{children}</p>
         </motion.div>
-        <h3 className={cn("text-xl font-bold", color.replace('bg-', 'text-'))}>{title}</h3>
-      </div>
-      <p className="text-muted-foreground text-sm">{children}</p>
-    </motion.div>
-  );
+    );
 
-  return (
-    <div className="py-16 bg-muted rounded-lg">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12 px-4"
-      >
-        <h2 className="text-3xl font-bold">The Anatomy of a Request</h2>
-        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">To get data from an API, you need to make a "request." Think of it as filling out a specific form to ask the server for what you need.</p>
-      </motion.div>
-      <div className="container mx-auto px-4">
-         <h3 className="text-2xl font-bold text-center mb-8">HTTP Methods: The "Verb" of your Request</h3>
-         <div className="grid md:grid-cols-2 gap-6">
-            <MethodCard icon={<Mail className="w-8 h-8 text-white"/>} title="GET" color="bg-green-500">
-                Retrieves data from a server. It's like asking to **read** a letter from a mailbox without changing it.
-            </MethodCard>
-             <MethodCard icon={<FilePlus className="w-8 h-8 text-white"/>} title="POST" color="bg-orange-500">
-                Submits new data to a server. It's like putting a **new** letter into the mailbox to be filed away.
-            </MethodCard>
-             <MethodCard icon={<FileCheck className="w-8 h-8 text-white"/>} title="PUT" color="bg-blue-500">
-                Updates existing data on a server. It's like **replacing** an entire letter in the mailbox with a new version.
-            </MethodCard>
-             <MethodCard icon={<Trash2 className="w-8 h-8 text-white"/>} title="DELETE" color="bg-red-500">
-                Removes data from a server. It's like taking a letter out of the mailbox and **shredding** it.
-            </MethodCard>
-         </div>
-      </div>
-    </div>
-  );
+    return (
+        <div className="py-16 bg-muted rounded-lg">
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="text-center mb-12 px-4"
+            >
+                <h2 className="text-3xl font-bold">The Anatomy of a Request</h2>
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">To get data from an API, you need to make a "request." Think of it as filling out a specific form to ask the server for what you need.</p>
+            </motion.div>
+            <div className="container mx-auto px-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-center">HTTP Methods: The "Verb" of your Request</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid md:grid-cols-2 gap-6">
+                        <MethodCard icon={<Mail className="w-8 h-8 text-white"/>} title="GET" color="bg-green-500">
+                            Retrieves data from a server. It's like asking to **read** a letter from a mailbox without changing it.
+                        </MethodCard>
+                        <MethodCard icon={<FilePlus className="w-8 h-8 text-white"/>} title="POST" color="bg-orange-500">
+                            Submits new data to a server. It's like putting a **new** letter into the mailbox to be filed away.
+                        </MethodCard>
+                        <MethodCard icon={<FileCheck className="w-8 h-8 text-white"/>} title="PUT" color="bg-blue-500">
+                            Updates existing data on a server. It's like **replacing** an entire letter in the mailbox with a new version.
+                        </MethodCard>
+                        <MethodCard icon={<Trash2 className="w-8 h-8 text-white"/>} title="DELETE" color="bg-red-500">
+                            Removes data from a server. It's like taking a letter out of the mailbox and **shredding** it.
+                        </MethodCard>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 };
 
 
 // Part 6: Deconstructing the Request
 const UrlBreakdown = () => (
-    <div className="bg-card border rounded-lg p-6 shadow-md font-code text-sm md:text-base">
-        <p className="text-muted-foreground mb-4 font-sans text-sm">A URL (Uniform Resource Locator) is the address you use to find a specific resource on the internet.</p>
-        <div className="break-all p-4 bg-muted rounded-md flex flex-col md:flex-row gap-x-1">
-            <span className="text-purple-500">https://</span>
-            <span className="text-blue-500">api.example.com</span>
-            <span className="text-green-500">/v1/users</span>
-            <span className="text-orange-500">?id=123</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div><span className="text-purple-500 font-bold">Protocol:</span> The method for exchanging data.</div>
-            <div><span className="text-blue-500 font-bold">Domain:</span> The server's address.</div>
-            <div><span className="text-green-500 font-bold">Path:</span> The specific resource you want.</div>
-            <div><span className="text-orange-500 font-bold">Query Params:</span> Filters to specify your request.</div>
-        </div>
-    </div>
+    <Card className="shadow-md">
+        <CardHeader>
+            <CardTitle>The URL</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-muted-foreground mb-4 font-sans text-sm">A URL (Uniform Resource Locator) is the address you use to find a specific resource on the internet.</p>
+            <div className="break-all p-4 bg-muted rounded-md flex flex-col md:flex-row gap-x-1 font-code text-sm md:text-base">
+                <span className="text-purple-500">https://</span>
+                <span className="text-blue-500">api.example.com</span>
+                <span className="text-green-500">/v1/users</span>
+                <span className="text-orange-500">?id=123</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 mt-4 text-sm">
+                <div><span className="text-purple-500 font-bold">Protocol:</span> The method for exchanging data.</div>
+                <div><span className="text-blue-500 font-bold">Domain:</span> The server's address.</div>
+                <div><span className="text-green-500 font-bold">Path:</span> The specific resource you want.</div>
+                <div><span className="text-orange-500 font-bold">Query Params:</span> Filters to specify your request.</div>
+            </div>
+        </CardContent>
+    </Card>
 );
 
 const RequestStructureSection = () => {
@@ -397,8 +401,10 @@ const RequestStructureSection = () => {
                 <UrlBreakdown />
                 <div className="grid md:grid-cols-2 gap-8">
                     <Card className="shadow-md">
-                        <CardContent className="p-6">
-                            <h3 className="text-xl font-bold mb-4">Headers</h3>
+                        <CardHeader>
+                           <CardTitle>Headers</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="text-sm text-muted-foreground mb-4">Headers provide meta-information about the request, like the format of the data you're sending or your authentication credentials.</p>
                             <div className="bg-muted p-4 rounded-lg font-code text-sm space-y-1">
                                 <pre><code>{JSON.stringify(headers, null, 2)}</code></pre>
@@ -406,8 +412,10 @@ const RequestStructureSection = () => {
                         </CardContent>
                     </Card>
                     <Card className="shadow-md">
-                        <CardContent className="p-6">
-                            <h3 className="text-xl font-bold mb-4">Body (Payload)</h3>
+                        <CardHeader>
+                           <CardTitle>Body (Payload)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <p className="text-sm text-muted-foreground mb-4">The body contains the actual data you want to send to the server, usually for POST or PUT requests. It's often in JSON format.</p>
                              <div className="bg-muted p-4 rounded-lg font-code text-sm">
                                 <pre><code>{JSON.stringify(body, null, 2)}</code></pre>
@@ -422,7 +430,7 @@ const RequestStructureSection = () => {
 
 // Part 7: Visualizing the Response
 const StatusCodeCard = ({ code, emoji, title, color, children }: { code: string, emoji: string, title: string, color: string, children: React.ReactNode }) => (
-    <div className="bg-card border rounded-lg p-6 shadow-md">
+    <div className="bg-card border rounded-lg p-6 shadow-md h-full">
         <div className="flex items-center gap-4 mb-3">
             <div className={cn("text-4xl", color)}>{emoji}</div>
             <div>
@@ -443,27 +451,32 @@ const ResponseAnatomySection = () => (
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">After the server processes your request, it sends back a response. Here’s what you get.</p>
         </motion.div>
         <div className="container mx-auto px-4 space-y-8">
-            <div className="grid md:grid-cols-3 gap-6">
-                <StatusCodeCard code="2xx" emoji="😊" title="Success" color="text-green-500">
-                    Everything worked as expected! The server has fulfilled your request.
-                </StatusCodeCard>
-                <StatusCodeCard code="4xx" emoji="😕" title="Client Error" color="text-yellow-500">
-                    You made a mistake. This could be a bad URL, missing authentication, or invalid data.
-                </StatusCodeCard>
-                <StatusCodeCard code="5xx" emoji="😱" title="Server Error" color="text-red-500">
-                    The server messed up. Something went wrong on their end, and they couldn't fulfill your request.
-                </StatusCodeCard>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-center">Status Codes</CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-3 gap-6">
+                    <StatusCodeCard code="2xx" emoji="😊" title="Success" color="text-green-500">
+                        Everything worked as expected! The server has fulfilled your request.
+                    </StatusCodeCard>
+                    <StatusCodeCard code="4xx" emoji="😕" title="Client Error" color="text-yellow-500">
+                        You made a mistake. This could be a bad URL, missing authentication, or invalid data.
+                    </StatusCodeCard>
+                    <StatusCodeCard code="5xx" emoji="😱" title="Server Error" color="text-red-500">
+                        The server messed up. Something went wrong on their end, and they couldn't fulfill your request.
+                    </StatusCodeCard>
+                </CardContent>
+            </Card>
              <div className="grid md:grid-cols-2 gap-8 pt-8">
                     <Card className="shadow-md">
-                        <CardContent className="p-6">
-                            <h3 className="text-xl font-bold mb-4">Response Headers</h3>
+                        <CardHeader><CardTitle>Response Headers</CardTitle></CardHeader>
+                        <CardContent>
                             <p className="text-sm text-muted-foreground">Similar to request headers, these provide meta-information about the response, like the data format or server details.</p>
                         </CardContent>
                     </Card>
                     <Card className="shadow-md">
-                        <CardContent className="p-6">
-                            <h3 className="text-xl font-bold mb-4">Response Body</h3>
+                        <CardHeader><CardTitle>Response Body</CardTitle></CardHeader>
+                        <CardContent>
                             <p className="text-sm text-muted-foreground">This is the main content you asked for, usually in a structured format like JSON that your application can easily parse and use.</p>
                         </CardContent>
                     </Card>
@@ -476,7 +489,7 @@ const ResponseAnatomySection = () => (
 const AuthCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
   <motion.div
     whileHover={{ y: -5 }}
-    className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+    className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow h-full"
   >
     <div className="flex items-center gap-4 mb-3">
       <div className="text-accent">{icon}</div>
@@ -515,12 +528,13 @@ const AuthenticationSection = () => (
 
 // Part 9: Conclusion
 const ConclusionSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
-  <div className="py-16 text-center">
+  <div className="py-16 text-center bg-muted rounded-lg">
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.2 }}
+      className="container mx-auto px-4"
     >
       <h2 className="text-3xl font-bold">You're Ready to Go!</h2>
       <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
@@ -542,7 +556,7 @@ export function LearnApiPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" onClick={handleBackToSandbox}>
@@ -554,21 +568,21 @@ export function LearnApiPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
-        <HeroSection />
-        <PrerequisitesSection />
-        <ApiFundamentalsSection />
-        <InteractiveDiscoverySection />
-        <AnatomyOfRequestSection />
-        <RequestStructureSection />
-        <ResponseAnatomySection />
-        <AuthenticationSection />
-        <ConclusionSection onCtaClick={handleBackToSandbox} />
+      <main className="container mx-auto px-4 py-8">
+        <div className="space-y-8">
+            <HeroSection />
+            <PrerequisitesSection />
+            <ApiFundamentalsSection />
+            <InteractiveDiscoverySection />
+            <AnatomyOfRequestSection />
+            <RequestStructureSection />
+            <ResponseAnatomySection />
+            <AuthenticationSection />
+            <ConclusionSection onCtaClick={handleBackToSandbox} />
+        </div>
       </main>
 
       <ApiChatbot />
     </div>
   );
 }
-
-    

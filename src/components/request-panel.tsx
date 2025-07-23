@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ApiRequest, HttpMethod } from '@/lib/types';
@@ -40,6 +41,8 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
     }
   };
 
+  const isBodyDisabled = request.method === 'GET' || request.method === 'HEAD';
+
   return (
     <Card className="shadow-sm">
       <CardContent className="p-0">
@@ -80,7 +83,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="params">Query Params</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
-              <TabsTrigger value="body">Body</TabsTrigger>
+              <TabsTrigger value="body" disabled={isBodyDisabled}>Body</TabsTrigger>
             </TabsList>
             <TabsContent value="params" className="mt-4">
               <KeyValueEditor
@@ -96,7 +99,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
             </TabsContent>
             <TabsContent value="body" className="mt-4">
               <div className="space-y-4">
-                <Select value={request.bodyType} onValueChange={handleBodyTypeChange} disabled={request.method === 'GET' || request.method === 'HEAD'}>
+                <Select value={request.bodyType} onValueChange={handleBodyTypeChange} disabled={isBodyDisabled}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Body Type" />
                   </SelectTrigger>
@@ -112,7 +115,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
                     value={request.body}
                     onChange={e => onUpdateRequest({ body: e.target.value })}
                     className="font-code min-h-[200px]"
-                    disabled={request.method === 'GET' || request.method === 'HEAD'}
+                    disabled={isBodyDisabled}
                   />
                 )}
                 {request.bodyType === 'form-urlencoded' && (
@@ -121,7 +124,7 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
                     value={request.body}
                     onChange={e => onUpdateRequest({ body: e.target.value })}
                     className="font-code min-h-[200px]"
-                    disabled={request.method === 'GET' || request.method === 'HEAD'}
+                    disabled={isBodyDisabled}
                   />
                 )}
               </div>
