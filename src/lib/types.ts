@@ -42,3 +42,9 @@ export interface CollectionItem {
   request?: ApiRequest;
   children?: CollectionItem[];
 }
+
+export interface Environment {
+  id: string;
+  name: string;
+  variables: KeyValuePair[];
+}

@@ -6,13 +6,13 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger, SidebarContent,
 import { Button } from '@/components/ui/button';
 import { RequestPanel } from '@/components/request-panel';
 import { ResponsePanel } from '@/components/response-panel';
-import { ApiRequest, ApiResponse, CollectionItem, RequestHistoryItem, HttpMethod, KeyValuePair } from '@/lib/types';
+import { ApiRequest, ApiResponse, CollectionItem, RequestHistoryItem, HttpMethod, KeyValuePair, Environment } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 import { generateCodeSnippet } from '@/ai/flows/generate-code-snippets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CodeSnippetViewer } from '@/components/code-snippet-viewer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Terminal, AlertTriangle, X, Save, GraduationCap, List } from 'lucide-react';
+import { Code, Terminal, AlertTriangle, X, Save, GraduationCap, List, Globe } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,6 +27,9 @@ export function ApiSandbox() {
 
   const [history, setHistory] = useLocalStorage<RequestHistoryItem[]>('api-sandbox-history', []);
   const [collections, setCollections] = useLocalStorage<CollectionItem[]>('api-sandbox-collections', []);
+  const [environments, setEnvironments] = useLocalStorage<Environment[]>('api-sandbox-environments', []);
+  const [activeEnvironmentId, setActiveEnvironmentId] = useLocalStorage<string | null>('api-sandbox-active-env', null);
+
 
   const [generatedCode, setGeneratedCode] = useState('');
   const [codeLanguage, setCodeLanguage] = useState('cURL');
@@ -131,16 +134,31 @@ export function ApiSandbox() {
       return false;
     }
   };
+  
+  const substituteVariables = (str: string): string => {
+    const activeEnvironment = environments.find(env => env.id === activeEnvironmentId);
+    if (!activeEnvironment) return str;
+    
+    let substitutedStr = str;
+    activeEnvironment.variables.forEach(variable => {
+      if (variable.enabled && variable.key) {
+        const regex = new RegExp(`\\{\\{${variable.key}\\}\\}`, 'g');
+        substitutedStr = substitutedStr.replace(regex, variable.value);
+      }
+    });
+    return substitutedStr;
+  };
 
 
   const handleSendRequest = async () => {
     if (!activeRequest) return;
     
-    if (!validateUrl(activeRequest.url)) {
+    const processedUrl = substituteVariables(activeRequest.url);
+    if (!validateUrl(processedUrl)) {
       toast({
         variant: "destructive",
         title: "Invalid URL",
-        description: "Please enter a valid URL before sending a request.",
+        description: "Please enter a valid URL after variable substitution.",
       });
       return;
     }
@@ -151,25 +169,26 @@ export function ApiSandbox() {
     const startTime = Date.now();
     
     try {
-      const url = new URL(activeRequest.url);
+      const url = new URL(processedUrl);
       activeRequest.queryParams
         .filter(p => p.enabled && p.key)
-        .forEach(p => url.searchParams.append(p.key, p.value));
+        .forEach(p => url.searchParams.append(substituteVariables(p.key), substituteVariables(p.value)));
 
       const headers = new Headers();
       activeRequest.headers
         .filter(h => h.enabled && h.key)
-        .forEach(h => headers.append(h.key, h.value));
+        .forEach(h => headers.append(substituteVariables(h.key), substituteVariables(h.value)));
 
       let body: BodyInit | undefined = undefined;
       if (activeRequest.method !== 'GET' && activeRequest.method !== 'HEAD') {
-        if (activeRequest.bodyType === 'json' && activeRequest.body) {
-          body = activeRequest.body;
+         if (activeRequest.bodyType === 'json' && activeRequest.body) {
+          body = substituteVariables(activeRequest.body);
           if (!headers.has('Content-Type')) {
             headers.append('Content-Type', 'application/json');
           }
         } else if (activeRequest.bodyType === 'form-urlencoded' && activeRequest.body) {
-          const bodyParams = JSON.parse(activeRequest.body);
+          const substitutedBody = substituteVariables(activeRequest.body);
+          const bodyParams = JSON.parse(substitutedBody);
           const urlSearchParams = new URLSearchParams();
           for(const key in bodyParams) {
               urlSearchParams.append(key, bodyParams[key]);
@@ -260,9 +279,9 @@ export function ApiSandbox() {
     try {
       const result = await generateCodeSnippet({
         method: activeRequest.method,
-        url: activeRequest.url,
-        headers: JSON.stringify(Object.fromEntries(activeRequest.headers.filter(h => h.enabled && h.key).map(h => [h.key, h.value]))),
-        body: activeRequest.body,
+        url: substituteVariables(activeRequest.url),
+        headers: JSON.stringify(Object.fromEntries(activeRequest.headers.filter(h => h.enabled && h.key).map(h => [substituteVariables(h.key), substituteVariables(h.value)]))),
+        body: substituteVariables(activeRequest.body),
         codeLanguage: lang.split(' ')[0],
         library: lang.split(' ')[1]?.replace(/[()]/g, ''),
       });
@@ -311,8 +330,10 @@ export function ApiSandbox() {
             <SandboxSidebarContent
               history={history}
               collections={collections}
+              environments={environments}
               onSelectRequest={handleSelectRequest}
               setCollections={setCollections}
+              setEnvironments={setEnvironments}
               activeRequestId={activeRequest.id}
             />
           </SidebarContent>
@@ -327,6 +348,18 @@ export function ApiSandbox() {
                 aria-label="Request Name"
               />
               <div className="flex items-center gap-2">
+                 <Select value={activeEnvironmentId || 'none'} onValueChange={v => setActiveEnvironmentId(v === 'none' ? null : v)}>
+                    <SelectTrigger className="w-[180px] h-9">
+                        <SelectValue placeholder="Select Environment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="none">No Environment</SelectItem>
+                        {environments.map(env => (
+                            <SelectItem key={env.id} value={env.id}>{env.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                 </Select>
+
                 <Button variant="outline" size="sm" onClick={handleSaveRequest}>
                   <Save className="mr-2 h-4 w-4" />
                   Save

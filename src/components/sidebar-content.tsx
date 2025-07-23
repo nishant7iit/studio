@@ -1,11 +1,11 @@
 
 "use client";
 
-import { ApiRequest, CollectionItem, RequestHistoryItem } from "@/lib/types";
+import { ApiRequest, CollectionItem, RequestHistoryItem, Environment } from "@/lib/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Button } from "./ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
-import { History, Folder, Plus, MoreVertical, Trash2, FilePlus, Edit, X } from "lucide-react";
+import { History, Folder, Plus, MoreVertical, Trash2, FilePlus, Edit, X, Globe } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
@@ -14,14 +14,24 @@ import { Input } from "./ui/input";
 interface SidebarContentProps {
   history: RequestHistoryItem[];
   collections: CollectionItem[];
+  environments: Environment[];
   onSelectRequest: (request: ApiRequest) => void;
   setCollections: (collections: CollectionItem[] | ((prev: CollectionItem[]) => CollectionItem[])) => void;
+  setEnvironments: (environments: Environment[] | ((prev: Environment[]) => Environment[])) => void;
   activeRequestId: string;
 }
 
 const generateId = (prefix: string = 'id') => `${prefix}_${Math.random().toString(36).substring(2, 11)}`;
 
-export function SidebarContent({ history, collections, onSelectRequest, setCollections, activeRequestId }: SidebarContentProps) {
+export function SidebarContent({ 
+  history, 
+  collections, 
+  environments, 
+  onSelectRequest, 
+  setCollections, 
+  setEnvironments, 
+  activeRequestId 
+}: SidebarContentProps) {
   const [editingCollectionId, setEditingCollectionId] = useState<string | null>(null);
   const [collectionName, setCollectionName] = useState("");
 
@@ -83,6 +93,20 @@ export function SidebarContent({ history, collections, onSelectRequest, setColle
         return c;
     }));
   };
+  
+  const handleAddEnvironment = () => {
+    const newEnvironment: Environment = {
+      id: generateId('env'),
+      name: 'New Environment',
+      variables: [],
+    };
+    setEnvironments(prev => [...prev, newEnvironment]);
+  };
+  
+  const handleRemoveEnvironment = (id: string) => {
+    setEnvironments(prev => prev.filter(env => env.id !== id));
+  };
+
 
   const getMethodClass = (method?: string) => {
     switch (method) {
@@ -162,12 +186,13 @@ export function SidebarContent({ history, collections, onSelectRequest, setColle
   return (
     <Tabs defaultValue="collections" className="w-full p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:border-t">
        <div className="group-data-[collapsible=icon]:hidden">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="collections">Collections</TabsTrigger>
+            <TabsTrigger value="environments">Environments</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
        </div>
-        <TabsContent value="collections" className="mt-2 group-data-[collapsible=icon]:hidden">
+       <TabsContent value="collections" className="mt-2 group-data-[collapsible=icon]:hidden">
             <div className="flex justify-end mb-2">
                 <Button variant="ghost" size="sm" onClick={handleAddCollection}>
                     <Plus className="w-4 h-4 mr-2"/>
@@ -177,6 +202,27 @@ export function SidebarContent({ history, collections, onSelectRequest, setColle
             <Accordion type="multiple" className="w-full space-y-1">
                 {collections.map(renderCollection)}
             </Accordion>
+        </TabsContent>
+        <TabsContent value="environments" className="mt-2 group-data-[collapsible=icon]:hidden">
+           <div className="flex justify-end mb-2">
+                <Button variant="ghost" size="sm" onClick={handleAddEnvironment}>
+                    <Plus className="w-4 h-4 mr-2"/>
+                    New Environment
+                </Button>
+            </div>
+            <div className="space-y-1">
+                {environments.map(env => (
+                    <div key={env.id} className="group flex items-center justify-between rounded-md text-sm font-medium hover:bg-sidebar-accent">
+                        <button className="flex items-center gap-2 p-2 flex-1 text-left">
+                            <Globe className="w-4 h-4 text-accent"/>
+                            <span className="truncate flex-1">{env.name}</span>
+                        </button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => handleRemoveEnvironment(env.id)}>
+                            <X className="w-3 h-3 text-destructive" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
         </TabsContent>
         <TabsContent value="history" className="mt-2 group-data-[collapsible=icon]:hidden">
             <div className="space-y-1">
@@ -203,3 +249,4 @@ export function SidebarContent({ history, collections, onSelectRequest, setColle
     </Tabs>
   )
 }
+
