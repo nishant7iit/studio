@@ -65,37 +65,46 @@ export function ApiSandbox() {
 
   const handleSendRequest = async () => {
     if (!activeRequest) return;
+
+    if (!activeRequest.url) {
+      toast({
+        variant: "destructive",
+        title: "URL is required",
+        description: "Please enter a URL before sending a request.",
+      });
+      return;
+    }
     
     setLoading(true);
     setResponse(null);
     const startTime = Date.now();
-
-    const url = new URL(activeRequest.url);
-    activeRequest.queryParams
-      .filter(p => p.enabled && p.key)
-      .forEach(p => url.searchParams.append(p.key, p.value));
-
-    const headers = new Headers();
-    activeRequest.headers
-      .filter(h => h.enabled && h.key)
-      .forEach(h => headers.append(h.key, h.value));
-
-    let body: BodyInit | undefined = undefined;
-    if (activeRequest.method !== 'GET' && activeRequest.method !== 'HEAD') {
-      if (activeRequest.bodyType === 'json') {
-        body = activeRequest.body;
-        if (!headers.has('Content-Type')) {
-          headers.append('Content-Type', 'application/json');
-        }
-      } else if (activeRequest.bodyType === 'form-urlencoded') {
-        body = new URLSearchParams(JSON.parse(activeRequest.body)).toString();
-        if (!headers.has('Content-Type')) {
-          headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        }
-      }
-    }
     
     try {
+      const url = new URL(activeRequest.url);
+      activeRequest.queryParams
+        .filter(p => p.enabled && p.key)
+        .forEach(p => url.searchParams.append(p.key, p.value));
+
+      const headers = new Headers();
+      activeRequest.headers
+        .filter(h => h.enabled && h.key)
+        .forEach(h => headers.append(h.key, h.value));
+
+      let body: BodyInit | undefined = undefined;
+      if (activeRequest.method !== 'GET' && activeRequest.method !== 'HEAD') {
+        if (activeRequest.bodyType === 'json') {
+          body = activeRequest.body;
+          if (!headers.has('Content-Type')) {
+            headers.append('Content-Type', 'application/json');
+          }
+        } else if (activeRequest.bodyType === 'form-urlencoded') {
+          body = new URLSearchParams(JSON.parse(activeRequest.body)).toString();
+          if (!headers.has('Content-Type')) {
+            headers.append('Content-Type', 'application/x-www-form-urlencoded');
+          }
+        }
+      }
+
       const res = await fetch(url.toString(), {
         method: activeRequest.method,
         headers,
@@ -133,9 +142,9 @@ export function ApiSandbox() {
       const endTime = Date.now();
       const errorResponse: ApiResponse = {
         status: 0,
-        statusText: 'Network Error',
+        statusText: 'Client Error',
         headers: {},
-        data: { error: 'Failed to fetch. This might be due to a CORS issue or network problem.', details: error.message },
+        data: { error: 'Failed to fetch. This might be due to a CORS issue, network problem, or invalid URL.', details: error.message },
         time: endTime - startTime,
         size: 0,
       };
@@ -143,7 +152,7 @@ export function ApiSandbox() {
        toast({
         variant: "destructive",
         title: "Request Failed",
-        description: "Could not send request. Check the console for CORS errors or network issues.",
+        description: error.message || "Could not send request. Check the console for more details.",
       });
     } finally {
       setLoading(false);
