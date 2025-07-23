@@ -3,10 +3,10 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { ApiChatbot } from './api-chatbot';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -55,88 +55,6 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 );
 
 
-const AnimatedDataFlow = () => {
-    return (
-        <div className="relative w-full h-32 flex items-center justify-center">
-            {/* Client */}
-            <motion.div 
-                className="z-10 flex flex-col items-center"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-            >
-                <User className="w-10 h-10 text-primary" />
-                <span className="text-sm mt-1">You</span>
-            </motion.div>
-
-            {/* Server */}
-            <motion.div 
-                className="z-10 flex flex-col items-center"
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-            >
-                <Server className="w-10 h-10 text-accent" />
-                <span className="text-sm mt-1">Server</span>
-            </motion.div>
-
-            {/* Connecting Line */}
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-600" />
-            
-            {/* Data Packets */}
-            <motion.div 
-                className="absolute top-1/2 -mt-1 w-3 h-2 bg-primary rounded-full"
-                animate={{
-                    x: [-60, 60],
-                    opacity: [1, 0],
-                    transition: {
-                        repeat: Infinity,
-                        duration: 3,
-                        ease: "linear"
-                    }
-                }}
-            />
-            <motion.div 
-                className="absolute top-1/2 -mt-1 w-3 h-2 bg-accent rounded-full"
-                animate={{
-                    x: [60, -60],
-                    opacity: [1, 0],
-                    transition: {
-                        repeat: Infinity,
-                        duration: 3,
-                        delay: 1.5,
-                        ease: "linear"
-                    }
-                }}
-            />
-        </div>
-    );
-};
-
-const QuickAccessMenu = () => {
-    const menuItems = [
-        { name: "Fundamentals", icon: Book },
-        { name: "Structure", icon: BrainCircuit },
-        { name: "Requests", icon: Rocket },
-        { name: "Responses", icon: Zap }
-    ];
-    return (
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
-            {menuItems.map((item, index) => (
-                <motion.button 
-                    key={item.name}
-                    variants={itemVariants}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/80 rounded-full text-sm"
-                >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.name}</span>
-                </motion.button>
-            ))}
-        </div>
-    );
-};
-
-
 const HeroSection = () => {
     const [progress, setProgress] = useState(10);
     const [mode, setMode] = useState<'beginner' | 'intermediate'>('beginner');
@@ -159,7 +77,59 @@ const HeroSection = () => {
                     From your first request to mastering authentication, we'll guide you every step of the way.
                 </motion.p>
                 
-                <AnimatedDataFlow />
+                 <div className="relative w-full h-32 flex items-center justify-center">
+                    {/* Client */}
+                    <motion.div 
+                        className="z-10 flex flex-col items-center"
+                        initial={{ opacity: 0, x: -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <User className="w-10 h-10 text-primary" />
+                        <span className="text-sm mt-1">You</span>
+                    </motion.div>
+
+                    {/* Server */}
+                    <motion.div 
+                        className="z-10 flex flex-col items-center"
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <Server className="w-10 h-10 text-accent" />
+                        <span className="text-sm mt-1">Server</span>
+                    </motion.div>
+
+                    {/* Connecting Line */}
+                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-600" />
+                    
+                    {/* Data Packets */}
+                    <motion.div 
+                        className="absolute top-1/2 -mt-1 w-3 h-2 bg-primary rounded-full"
+                        animate={{
+                            x: [-60, 60],
+                            opacity: [1, 0],
+                            transition: {
+                                repeat: Infinity,
+                                duration: 3,
+                                ease: "linear"
+                            }
+                        }}
+                    />
+                    <motion.div 
+                        className="absolute top-1/2 -mt-1 w-3 h-2 bg-accent rounded-full"
+                        animate={{
+                            x: [60, -60],
+                            opacity: [1, 0],
+                            transition: {
+                                repeat: Infinity,
+                                duration: 3,
+                                delay: 1.5,
+                                ease: "linear"
+                            }
+                        }}
+                    />
+                </div>
 
                 <motion.div variants={itemVariants} className="max-w-md mx-auto my-8">
                     <div className="flex justify-between text-sm text-gray-400 mb-1">
@@ -186,7 +156,18 @@ const HeroSection = () => {
                     </Button>
                 </motion.div>
                 
-                <QuickAccessMenu />
+                <div className="flex flex-wrap justify-center gap-4 mt-6">
+                    {[{ name: "Fundamentals", icon: Book }, { name: "Structure", icon: BrainCircuit }, { name: "Requests", icon: Rocket }, { name: "Responses", icon: Zap }].map((item, index) => (
+                        <motion.button 
+                            key={item.name}
+                            variants={itemVariants}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/80 rounded-full text-sm"
+                        >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.name}</span>
+                        </motion.button>
+                    ))}
+                </div>
             </motion.div>
         </div>
     );
@@ -251,7 +232,7 @@ const PrerequisitesSection = () => {
             description: "Simply put, data is information. For APIs, this is often structured in a specific format, like JSON, so computers can easily read it.",
              animation: (
                  <div className="w-full h-24 flex items-center justify-center">
-                    <motion.div variants={itemVariants} className="font-code text-xs bg-gray-800 p-2 rounded-md">
+                    <motion.div variants={itemVariants} className="font-code text-xs bg-gray-800 p-2 rounded-md text-white">
                         <pre>
                             <code>{`{
   "name": "Alex",
@@ -369,6 +350,51 @@ const ApiFundamentalsSection = () => {
     );
 }
 
+const InteractiveDiscoverySection = () => {
+    const apps = [
+        { name: "Weather App", icon: Cloudy, description: "Fetches current weather data from a remote server." },
+        { name: "Social Media", icon: MessageSquare, description: "Loads new posts and messages from a central API." },
+        { name: "E-commerce", icon: ShoppingCart, description: "Gets product information and processes orders via APIs." },
+        { name: "Maps & Navigation", icon: Map, description: "Pulls map tiles and routing information from a mapping service." },
+    ];
+
+    return (
+        <Section>
+            <SectionTitle>APIs Are Everywhere</SectionTitle>
+             <motion.p variants={itemVariants} className="max-w-3xl mx-auto text-center text-lg text-muted-foreground mb-12">
+                You use APIs every day, even if you don't realize it. Here are a few examples. Hover over an app to see how it relies on APIs.
+            </motion.p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                {apps.map((app) => (
+                    <motion.div key={app.name} variants={itemVariants}>
+                        <motion.div
+                            whileHover={{ y: -10, boxShadow: "0px 10px 30px -5px rgba(0, 0, 0, 0.1)" }}
+                            className="relative h-full p-6 bg-card rounded-lg border overflow-hidden text-center"
+                        >
+                            <div className="relative z-10">
+                                <div className="inline-block bg-primary/10 p-4 rounded-full mb-4">
+                                    <app.icon className="w-10 h-10 text-primary" />
+                                </div>
+                                <h3 className="font-bold text-xl mb-2">{app.name}</h3>
+                                <p className="text-muted-foreground text-sm">{app.description}</p>
+                            </div>
+                            <motion.div
+                                className="absolute z-20 bottom-0 left-0 right-0 bg-accent p-2 text-center"
+                                initial={{ y: "100%" }}
+                                whileHover={{ y: 0 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            >
+                                <p className="text-sm font-bold text-accent-foreground">Powered by APIs</p>
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
+                ))}
+            </div>
+        </Section>
+    );
+};
+
+
 export function LearnApiPage() {
   const router = useRouter();
   
@@ -378,7 +404,7 @@ export function LearnApiPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
             <Button variant="ghost" onClick={handleBackToSandbox}>
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -396,7 +422,9 @@ export function LearnApiPage() {
         
         <ApiFundamentalsSection />
 
-        <Card className="mb-8">
+        <InteractiveDiscoverySection />
+
+        <Card className="my-12">
             <CardHeader>
               <SectionTitle>Anatomy of a Request</SectionTitle>
             </CardHeader>
