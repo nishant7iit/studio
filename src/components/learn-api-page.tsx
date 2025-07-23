@@ -18,7 +18,7 @@ import {
   ShoppingCart,
   MessageSquare,
   Map,
-  Badge,
+  Badge as BadgeIcon,
   Mail,
   FilePlus,
   FileCheck,
@@ -28,6 +28,8 @@ import {
   BookUser,
   ChevronDown,
   ChevronRight as ChevronRightIcon,
+  Users,
+  CreditCard,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -35,6 +37,7 @@ import { Button } from './ui/button';
 import { ApiChatbot } from './api-chatbot';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
+import { Badge } from './ui/badge';
 
 
 // Part 1: Hero Section Component
@@ -45,7 +48,6 @@ const HeroSection = () => {
     <div className="relative bg-neutral-900 text-white py-20 px-4 overflow-hidden rounded-lg">
       <div className="absolute inset-0 bg-grid-white/[0.07] [mask-image:linear-gradient(to_bottom,white_20%,transparent_100%)]"></div>
       
-      {/* Animated Data Flow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-32 flex items-center justify-between opacity-20">
         <Smartphone className="w-16 h-16 text-blue-400" />
         <div className="w-full h-px bg-gradient-to-r from-blue-400 to-green-400 relative">
@@ -73,7 +75,6 @@ const HeroSection = () => {
           Transform intimidating technical docs into an engaging, visual journey. Let's make learning fun.
         </p>
 
-        {/* Progress Bar */}
         <div className="max-w-md mx-auto mb-8">
           <div className="w-full bg-neutral-700 rounded-full h-2.5">
             <motion.div
@@ -86,7 +87,6 @@ const HeroSection = () => {
           <p className="text-sm text-neutral-400 mt-2">Your Learning Journey: 10% Complete</p>
         </div>
 
-        {/* Learning Mode Selector */}
         <div className="flex justify-center gap-4">
           <Button
             onClick={() => setLearningMode('beginner')}
@@ -156,13 +156,13 @@ const PrerequisitesSection = () => (
         icon={<Network className="w-12 h-12" />}
         title="The Internet"
       >
-        A global network of computers that allows users to share information and communicate with each other. It's the highway system for data.
+        A global network of computers that allows users to share information and communicate. It's the highway system for data.
       </PrerequisiteBlock>
       <PrerequisiteBlock
         icon={<Handshake className="w-12 h-12" />}
         title="Client & Server"
       >
-        The Client (your device) asks for information, and the Server (a powerful computer) provides it. This is the fundamental relationship of the web.
+        The Client (your device) asks for information, and the Server (a powerful computer) provides it. This is the core relationship of the web.
       </PrerequisiteBlock>
       <PrerequisiteBlock
         icon={<ToyBrick className="w-12 h-12" />}
@@ -173,6 +173,7 @@ const PrerequisitesSection = () => (
     </div>
   </div>
 );
+
 
 // Part 3: API Fundamentals
 const ApiFundamentalsSection = () => {
@@ -209,7 +210,6 @@ const ApiFundamentalsSection = () => {
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
                 >
-                    {/* You (Client) */}
                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center">
                         <User className="w-16 h-16 text-primary p-3 bg-primary/10 rounded-full mb-2"/>
                         <h4 className="font-bold">You (Client)</h4>
@@ -220,7 +220,6 @@ const ApiFundamentalsSection = () => {
                         <ArrowRight className="w-12 h-12 text-muted-foreground"/>
                     </motion.div>
                     
-                    {/* Waiter (API) */}
                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center">
                         <FileText className="w-16 h-16 text-accent p-3 bg-accent/10 rounded-full mb-2"/>
                         <h4 className="font-bold">The Waiter (API)</h4>
@@ -231,7 +230,6 @@ const ApiFundamentalsSection = () => {
                          <ArrowRight className="w-12 h-12 text-muted-foreground"/>
                     </motion.div>
                     
-                    {/* Kitchen (Server) */}
                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center">
                         <Server className="w-16 h-16 text-green-500 p-3 bg-green-500/10 rounded-full mb-2"/>
                         <h4 className="font-bold">The Kitchen (Server)</h4>
@@ -239,7 +237,7 @@ const ApiFundamentalsSection = () => {
                     </motion.div>
                 </motion.div>
                  <p className="text-center mt-8 text-muted-foreground max-w-2xl mx-auto">
-                    In this analogy, the API is the waiter. It's the messenger that takes your structured request (your order), delivers it to the system that has the data (the kitchen), and brings the response back to you. It's a standardized way for different applications to talk to each other.
+                    The API is the waiter. It's the messenger that takes your structured request (your order), delivers it to the system that has the data (the kitchen), and brings the response back to you.
                  </p>
             </CardContent>
         </Card>
@@ -377,49 +375,13 @@ const UrlBreakdown = () => (
             <span className="text-orange-500">?id=123</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div><span className="text-purple-500 font-bold">Protocol:</span> The method for exchanging data (e.g., https).</div>
-            <div><span className="text-blue-500 font-bold">Domain:</span> The server's address (e.g., api.example.com).</div>
-            <div><span className="text-green-500 font-bold">Path:</span> The specific resource you want (e.g., /v1/users).</div>
-            <div><span className="text-orange-500 font-bold">Query Params:</span> Key-value pairs to filter or specify your request (e.g., ?id=123).</div>
+            <div><span className="text-purple-500 font-bold">Protocol:</span> The method for exchanging data.</div>
+            <div><span className="text-blue-500 font-bold">Domain:</span> The server's address.</div>
+            <div><span className="text-green-500 font-bold">Path:</span> The specific resource you want.</div>
+            <div><span className="text-orange-500 font-bold">Query Params:</span> Filters to specify your request.</div>
         </div>
     </div>
 );
-
-const JsonViewerNode = ({ nodeKey, value, isRoot = false }: { nodeKey: string, value: any, isRoot?: boolean }) => {
-    const [isExpanded, setIsExpanded] = useState(isRoot);
-    const isObject = typeof value === 'object' && value !== null;
-    const braceOpen = Array.isArray(value) ? '[' : '{';
-    const braceClose = Array.isArray(value) ? ']' : '}';
-
-    if (!isObject) {
-        return (
-            <div className="flex items-start">
-                <span className="text-blue-500 font-semibold mr-2">{`"${nodeKey}"`}:</span>
-                <span className={typeof value === 'string' ? 'text-green-500' : 'text-purple-500'}>
-                    {typeof value === 'string' ? `"${value}"` : String(value)}
-                </span>
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <div className="flex items-center cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                {isExpanded ? <ChevronDown className="w-4 h-4 mr-1" /> : <ChevronRightIcon className="w-4 h-4 mr-1" />}
-                {!isRoot && <span className="text-blue-500 font-semibold mr-2">{`"${nodeKey}"`}:</span>}
-                <span>{braceOpen}</span>
-            </div>
-            {isExpanded && (
-                <div className="pl-6 border-l ml-2">
-                    {Object.entries(value).map(([key, val]) => (
-                        <JsonViewerNode key={key} nodeKey={key} value={val} />
-                    ))}
-                </div>
-            )}
-            <span>{braceClose}</span>
-        </div>
-    );
-};
 
 const RequestStructureSection = () => {
     const headers = { "Content-Type": "application/json", "Authorization": "Bearer your_api_key" };
@@ -439,11 +401,7 @@ const RequestStructureSection = () => {
                             <h3 className="text-xl font-bold mb-4">Headers</h3>
                             <p className="text-sm text-muted-foreground mb-4">Headers provide meta-information about the request, like the format of the data you're sending or your authentication credentials.</p>
                             <div className="bg-muted p-4 rounded-lg font-code text-sm space-y-1">
-                                {Object.entries(headers).map(([key, value]) => (
-                                    <div key={key}>
-                                        <span className="text-orange-500">{key}:</span> <span className="text-green-500">{`"${value}"`}</span>
-                                    </div>
-                                ))}
+                                <pre><code>{JSON.stringify(headers, null, 2)}</code></pre>
                             </div>
                         </CardContent>
                     </Card>
@@ -452,7 +410,7 @@ const RequestStructureSection = () => {
                             <h3 className="text-xl font-bold mb-4">Body (Payload)</h3>
                             <p className="text-sm text-muted-foreground mb-4">The body contains the actual data you want to send to the server, usually for POST or PUT requests. It's often in JSON format.</p>
                              <div className="bg-muted p-4 rounded-lg font-code text-sm">
-                                <JsonViewerNode nodeKey="body" value={body} isRoot={true} />
+                                <pre><code>{JSON.stringify(body, null, 2)}</code></pre>
                             </div>
                         </CardContent>
                     </Card>
@@ -514,6 +472,67 @@ const ResponseAnatomySection = () => (
     </div>
 );
 
+// Part 8: Authentication & Security
+const AuthCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
+  <motion.div
+    whileHover={{ y: -5 }}
+    className="bg-card border rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+  >
+    <div className="flex items-center gap-4 mb-3">
+      <div className="text-accent">{icon}</div>
+      <h3 className="text-xl font-bold">{title}</h3>
+    </div>
+    <p className="text-sm text-muted-foreground">{children}</p>
+  </motion.div>
+);
+
+const AuthenticationSection = () => (
+  <div className="py-16">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-12 px-4"
+    >
+      <h2 className="text-3xl font-bold">Authentication & Security</h2>
+      <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">APIs need to know who is making a request. This is called authentication.</p>
+    </motion.div>
+    <div className="container mx-auto px-4 grid md:grid-cols-3 gap-8">
+      <AuthCard icon={<KeyRound className="w-10 h-10" />} title="API Keys">
+        The simplest form of authentication. It's like a secret password that you send with each request to identify your application.
+      </AuthCard>
+      <AuthCard icon={<Users className="w-10 h-10" />} title="OAuth 2.0">
+        A more secure method where a user grants your app permission to access their data on another service (like Google or Facebook) without sharing their password.
+      </AuthCard>
+      <AuthCard icon={<CreditCard className="w-10 h-10" />} title="JWT (Tokens)">
+        JSON Web Tokens are like a temporary passport. The server gives you a signed token after you log in, which you show with each request to prove who you are.
+      </AuthCard>
+    </div>
+  </div>
+);
+
+
+// Part 9: Conclusion
+const ConclusionSection = ({ onCtaClick }: { onCtaClick: () => void }) => (
+  <div className="py-16 text-center">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <h2 className="text-3xl font-bold">You're Ready to Go!</h2>
+      <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+        Congratulations! You've covered the fundamentals of how APIs work. Now it's time to put your knowledge into practice in the sandbox.
+      </p>
+      <Button size="lg" className="mt-8" onClick={onCtaClick}>
+        Go to the Sandbox <ArrowRight className="ml-2 h-5 w-5" />
+      </Button>
+    </motion.div>
+  </div>
+);
+
 
 export function LearnApiPage() {
   const router = useRouter();
@@ -543,9 +562,12 @@ export function LearnApiPage() {
         <AnatomyOfRequestSection />
         <RequestStructureSection />
         <ResponseAnatomySection />
+        <AuthenticationSection />
+        <ConclusionSection onCtaClick={handleBackToSandbox} />
       </main>
 
       <ApiChatbot />
     </div>
   );
 }
+
