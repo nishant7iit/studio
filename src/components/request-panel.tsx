@@ -109,10 +109,10 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
               </div>
             </TabsContent>
           </Tabs>
-          <div className="mt-4 p-2 bg-secondary rounded-md text-secondary-foreground text-xs flex items-center gap-2">
+          <p className="mt-4 p-2 bg-secondary rounded-md text-secondary-foreground text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-accent"/>
-            <p>This app sends requests directly from your browser. Requests may fail due to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener noreferrer" className="underline">CORS</a> policies of the destination server.</p>
-          </div>
+            This app sends requests directly from your browser. Requests may fail due to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener noreferrer" className="underline">CORS</a> policies of the destination server.
+          </p>
         </CardContent>
       </Card>
     </div>
