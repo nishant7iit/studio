@@ -3,7 +3,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map, Mailbox, Mail, FilePlus, Replace, Trash2, ChevronDown } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle, ChevronRight, BrainCircuit, Rocket, Zap, Book, Wifi, Handshake, Database, Globe, User, FileText, Server, Cloudy, MessageSquare, ShoppingCart, Map, Mail, FilePlus, Replace, Trash2, ChevronDown, KeyRound, Users, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -513,7 +513,7 @@ export function LearnApiPage() {
                         <div className="grid md:grid-cols-2 gap-8">
                              <MethodVisualization method="GET" description="Retrieve data (e.g., get a user's profile)." color="bg-green-500/10 text-green-500">
                                 <div className="relative">
-                                    <Mailbox className="w-16 h-16" />
+                                    <Mail className="w-16 h-16" />
                                     <motion.div
                                         className="absolute top-0 left-0"
                                         variants={{
@@ -644,6 +644,87 @@ export function LearnApiPage() {
                     </div>
                 </div>
             </CardContent>
+        </Card>
+
+        <Card className="my-12">
+          <CardHeader>
+            <SectionTitle>Authentication: Proving Who You Are</SectionTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="max-w-3xl mx-auto text-center text-lg text-muted-foreground mb-12">
+              Most APIs require you to prove your identity before you can use them. This is done through authentication.
+            </p>
+            <div className="space-y-12 max-w-4xl mx-auto">
+              {/* API Key */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-4 text-center">API Key</h3>
+                <p className="text-center text-muted-foreground mb-8">The simplest form of authentication. It's like a password you send along with your request.</p>
+                <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center p-6 bg-card rounded-lg border shadow-sm">
+                  <div className="relative flex items-center justify-center w-full h-24">
+                    <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
+                      <KeyRound className="w-12 h-12 text-primary" />
+                    </motion.div>
+                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.5, duration: 0.5 }} className="w-24 h-1 bg-primary/20 mx-4" />
+                    <motion.div initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }}>
+                       <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center">
+                         <Server className="w-8 h-8 text-accent" />
+                       </div>
+                    </motion.div>
+                  </div>
+                  <p className="text-sm mt-4 text-muted-foreground">The key unlocks the API's resources.</p>
+                </motion.div>
+              </div>
+
+              {/* OAuth 2.0 */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-4 text-center">OAuth 2.0</h3>
+                <p className="text-center text-muted-foreground mb-8">A more secure method where you grant an application limited access to your account on another service without sharing your password.</p>
+                <div className="flex items-center justify-center space-x-4 md:space-x-8 p-6">
+                    {/* User */}
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{delay: 0.2}} className="flex flex-col items-center text-center">
+                        <User className="w-10 h-10 text-primary" />
+                        <span className="text-sm font-bold mt-2">You</span>
+                    </motion.div>
+
+                    <Handshake className="w-8 h-8 text-muted-foreground" />
+                    
+                    {/* Application */}
+                     <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{delay: 0.4}} className="flex flex-col items-center text-center">
+                        <div className="p-3 bg-secondary rounded-full">
+                           <ShoppingCart className="w-8 h-8 text-secondary-foreground" />
+                        </div>
+                        <span className="text-sm font-bold mt-2">App</span>
+                    </motion.div>
+
+                    <Handshake className="w-8 h-8 text-muted-foreground" />
+
+                     {/* Service */}
+                     <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{delay: 0.6}} className="flex flex-col items-center text-center">
+                       <div className="p-3 bg-accent/20 rounded-full">
+                         <Server className="w-8 h-8 text-accent" />
+                       </div>
+                        <span className="text-sm font-bold mt-2">Service</span>
+                    </motion.div>
+                </div>
+                 <p className="text-sm mt-4 text-muted-foreground text-center">You tell the service (e.g., Google) to allow the app to access specific data on your behalf.</p>
+              </div>
+
+              {/* JWT */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-4 text-center">JWT (JSON Web Token)</h3>
+                <p className="text-center text-muted-foreground mb-8">A compact, self-contained way for securely transmitting information between parties as a JSON object. It's like a digital passport.</p>
+                <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center p-6 bg-card rounded-lg border shadow-sm">
+                   <div className="relative">
+                      <CreditCard className="w-24 h-24 text-primary" />
+                       <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1}} transition={{ delay: 0.5 }} className="absolute top-4 left-6">
+                         <CheckCircle className="w-6 h-6 text-green-500 bg-white rounded-full"/>
+                       </motion.div>
+                   </div>
+                   <p className="text-sm mt-4 text-muted-foreground">The token itself contains verified information (claims) about the user.</p>
+                </motion.div>
+              </div>
+            </div>
+          </CardContent>
         </Card>
 
         <Section className="border-b-0">
