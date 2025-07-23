@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useState } from "react";
 import { Input } from "./ui/input";
+import { EnvironmentEditor } from "./environment-editor";
 
 interface SidebarContentProps {
   history: RequestHistoryItem[];
@@ -34,6 +35,7 @@ export function SidebarContent({
 }: SidebarContentProps) {
   const [editingCollectionId, setEditingCollectionId] = useState<string | null>(null);
   const [collectionName, setCollectionName] = useState("");
+  const [editingEnvironment, setEditingEnvironment] = useState<Environment | null>(null);
 
   const handleAddCollection = () => {
     const newCollection: CollectionItem = {
@@ -98,14 +100,20 @@ export function SidebarContent({
     const newEnvironment: Environment = {
       id: generateId('env'),
       name: 'New Environment',
-      variables: [],
+      variables: [{id: generateId('var'), key: '', value: '', enabled: true}],
     };
     setEnvironments(prev => [...prev, newEnvironment]);
+    setEditingEnvironment(newEnvironment);
   };
   
   const handleRemoveEnvironment = (id: string) => {
     setEnvironments(prev => prev.filter(env => env.id !== id));
   };
+
+  const handleSaveEnvironment = (updatedEnvironment: Environment) => {
+    setEnvironments(prev => prev.map(env => env.id === updatedEnvironment.id ? updatedEnvironment : env));
+    setEditingEnvironment(null);
+  }
 
 
   const getMethodClass = (method?: string) => {
@@ -184,6 +192,7 @@ export function SidebarContent({
   );
 
   return (
+    <>
     <Tabs defaultValue="collections" className="w-full p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:border-t">
        <div className="group-data-[collapsible=icon]:hidden">
         <TabsList className="grid w-full grid-cols-3">
@@ -213,13 +222,25 @@ export function SidebarContent({
             <div className="space-y-1">
                 {environments.map(env => (
                     <div key={env.id} className="group flex items-center justify-between rounded-md text-sm font-medium hover:bg-sidebar-accent">
-                        <button className="flex items-center gap-2 p-2 flex-1 text-left">
+                        <button className="flex items-center gap-2 p-2 flex-1 text-left" onClick={() => setEditingEnvironment(env)}>
                             <Globe className="w-4 h-4 text-accent"/>
                             <span className="truncate flex-1">{env.name}</span>
                         </button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => handleRemoveEnvironment(env.id)}>
-                            <X className="w-3 h-3 text-destructive" />
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
+                                    <MoreVertical className="w-4 h-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setEditingEnvironment(env)}>
+                                    <Edit className="w-4 h-4 mr-2" /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleRemoveEnvironment(env.id)} className="text-destructive">
+                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 ))}
             </div>
@@ -247,6 +268,13 @@ export function SidebarContent({
             </div>
         </TabsContent>
     </Tabs>
+    {editingEnvironment && (
+        <EnvironmentEditor
+            environment={editingEnvironment}
+            onSave={handleSaveEnvironment}
+            onClose={() => setEditingEnvironment(null)}
+        />
+    )}
+    </>
   )
 }
-

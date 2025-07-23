@@ -18,6 +18,7 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { Input } from './ui/input';
+import { EnvironmentEditor } from './environment-editor';
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -430,5 +431,3 @@ export function ApiSandbox() {
     </SidebarProvider>
   );
 }
-
-    
