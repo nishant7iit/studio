@@ -17,6 +17,7 @@ import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-co
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
+import { Input } from './ui/input';
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -58,7 +59,27 @@ export function ApiSandbox() {
 
   const updateRequest = (updatedFields: Partial<ApiRequest>) => {
     if (activeRequest) {
-      setActiveRequest(prev => prev ? { ...prev, ...updatedFields } : null);
+      const newActiveRequest = { ...activeRequest, ...updatedFields };
+      setActiveRequest(newActiveRequest);
+
+      // Also update the request within the collections state
+      setCollections(prevCollections => {
+        return prevCollections.map(collection => {
+            const requestExists = collection.children?.some(child => child.id === newActiveRequest.id);
+            if(requestExists) {
+                return {
+                    ...collection,
+                    children: collection.children?.map(child => 
+                        child.id === newActiveRequest.id
+                            ? { ...child, name: newActiveRequest.name, request: newActiveRequest }
+                            : child
+                    )
+                }
+            }
+            return collection;
+        });
+      });
+
     }
   };
 
@@ -299,7 +320,12 @@ export function ApiSandbox() {
         <div className="flex flex-col h-screen flex-1">
             <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
               <SidebarTrigger/>
-              <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
+               <Input
+                value={activeRequest.name}
+                onChange={e => updateRequest({ name: e.target.value })}
+                className="font-semibold text-base border-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 h-9 flex-1"
+                aria-label="Request Name"
+              />
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleSaveRequest}>
                   <Save className="mr-2 h-4 w-4" />
