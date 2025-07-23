@@ -11,17 +11,17 @@ import { generateCodeSnippet } from '@/ai/flows/generate-code-snippets';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CodeSnippetViewer } from '@/components/code-snippet-viewer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Terminal } from 'lucide-react';
+import { Code, Terminal, AlertTriangle, X } from 'lucide-react';
 import { SidebarContent as SandboxSidebarContent } from '@/components/sidebar-content';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const generateId = () => {
+const generateId = (): string => {
     if (typeof window !== 'undefined') {
-        return Math.random().toString(36).substring(2, 11);
+      return Math.random().toString(36).substring(2, 11);
     }
-    return '';
+    return new Date().getTime().toString();
 };
-
 
 export function ApiSandbox() {
   const [activeRequest, setActiveRequest] = useState<ApiRequest | null>(null);
@@ -36,15 +36,16 @@ export function ApiSandbox() {
   const [codeLanguage, setCodeLanguage] = useState('cURL');
   const [isCodeGenOpen, setIsCodeGenOpen] = useState(false);
   const [isCodeGenLoading, setIsCodeGenLoading] = useState(false);
-  
+  const [showCorsWarning, setShowCorsWarning] = useState(false);
+
   useEffect(() => {
     const defaultRequest: ApiRequest = {
       id: generateId(),
       name: 'Untitled Request',
       method: 'GET',
-      url: '',
+      url: 'https://jsonplaceholder.typicode.com/todos/1',
       queryParams: [{ id: generateId(), key: '', value: '', enabled: true }],
-      headers: [{ id: generateId(), key: '', value: '', enabled: true }],
+      headers: [{ id: generateId(), key: 'Content-Type', value: 'application/json', enabled: true }],
       body: '',
       bodyType: 'none',
     };
@@ -62,11 +63,18 @@ export function ApiSandbox() {
     setActiveRequest(request);
     setResponse(null);
   };
+  
+  const validateUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   const handleSendRequest = async () => {
-    if (!activeRequest) return;
-
-    if (!activeRequest.url) {
+    if (!activeRequest || !activeRequest.url) {
       toast({
         variant: "destructive",
         title: "URL is required",
@@ -75,8 +83,18 @@ export function ApiSandbox() {
       return;
     }
     
+    if (!validateUrl(activeRequest.url)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid URL",
+        description: "Please enter a valid URL.",
+      });
+      return;
+    }
+    
     setLoading(true);
     setResponse(null);
+    setShowCorsWarning(false);
     const startTime = Date.now();
     
     try {
@@ -92,13 +110,18 @@ export function ApiSandbox() {
 
       let body: BodyInit | undefined = undefined;
       if (activeRequest.method !== 'GET' && activeRequest.method !== 'HEAD') {
-        if (activeRequest.bodyType === 'json') {
+        if (activeRequest.bodyType === 'json' && activeRequest.body) {
           body = activeRequest.body;
           if (!headers.has('Content-Type')) {
             headers.append('Content-Type', 'application/json');
           }
-        } else if (activeRequest.bodyType === 'form-urlencoded') {
-          body = new URLSearchParams(JSON.parse(activeRequest.body)).toString();
+        } else if (activeRequest.bodyType === 'form-urlencoded' && activeRequest.body) {
+          const bodyParams = JSON.parse(activeRequest.body);
+          const urlSearchParams = new URLSearchParams();
+          for(const key in bodyParams) {
+              urlSearchParams.append(key, bodyParams[key]);
+          }
+          body = urlSearchParams;
           if (!headers.has('Content-Type')) {
             headers.append('Content-Type', 'application/x-www-form-urlencoded');
           }
@@ -109,11 +132,20 @@ export function ApiSandbox() {
         method: activeRequest.method,
         headers,
         body,
+        mode: 'cors',
       });
 
       const endTime = Date.now();
-      const responseData = await res.json();
-      const responseSize = JSON.stringify(responseData).length;
+      
+      const responseBody = await res.text();
+      const responseSize = responseBody.length;
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseBody);
+      } catch (e) {
+        responseData = responseBody;
+      }
 
       const responseHeaders: Record<string, string> = {};
       res.headers.forEach((value, key) => {
@@ -140,6 +172,10 @@ export function ApiSandbox() {
 
     } catch (error: any) {
       const endTime = Date.now();
+      const isCorsError = error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('CORS'));
+      if (isCorsError) {
+        setShowCorsWarning(true);
+      }
       const errorResponse: ApiResponse = {
         status: 0,
         statusText: 'Client Error',
@@ -167,7 +203,7 @@ export function ApiSandbox() {
       const result = await generateCodeSnippet({
         method: activeRequest.method,
         url: activeRequest.url,
-        headers: JSON.stringify(Object.fromEntries(activeRequest.headers.filter(h => h.enabled).map(h => [h.key, h.value]))),
+        headers: JSON.stringify(Object.fromEntries(activeRequest.headers.filter(h => h.enabled && h.key).map(h => [h.key, h.value]))),
         body: activeRequest.body,
         codeLanguage: lang.split(' ')[0],
         library: lang.split(' ')[1]?.replace(/[()]/g, ''),
@@ -190,11 +226,14 @@ export function ApiSandbox() {
     if (isCodeGenOpen && activeRequest) {
       handleGenerateCode(codeLanguage);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCodeGenOpen, codeLanguage, activeRequest]);
+  }, [isCodeGenOpen, codeLanguage]);
 
   if (!activeRequest) {
-    return null; // Or a loading spinner
+    return (
+        <div className="flex h-screen w-full items-center justify-center">
+            <Terminal className="w-8 h-8 animate-spin" />
+        </div>
+    );
   }
 
   return (
@@ -220,7 +259,7 @@ export function ApiSandbox() {
           </SidebarContent>
         </Sidebar>
         <SidebarInset className="flex flex-col overflow-hidden">
-          <header className="p-2 border-b flex items-center justify-between gap-2">
+          <header className="p-2 border-b flex items-center justify-between gap-2 shrink-0">
             <SidebarTrigger/>
             <h2 className="font-semibold truncate flex-1">{activeRequest.name}</h2>
             <div className="flex items-center gap-2">
@@ -228,7 +267,6 @@ export function ApiSandbox() {
                 const newId = generateId();
                 const newRequest = {...activeRequest, id: newId, name: `${activeRequest.name} (Copy)`};
                 setActiveRequest(newRequest);
-                // Optionally save to collection here
               }}>Save</Button>
               <Dialog open={isCodeGenOpen} onOpenChange={setIsCodeGenOpen}>
                 <DialogTrigger asChild>
@@ -257,14 +295,33 @@ export function ApiSandbox() {
               </Dialog>
             </div>
           </header>
-          <div className="flex-1 flex flex-col overflow-y-auto p-4 gap-4">
+          
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            <div className="p-4">
               <RequestPanel 
                 request={activeRequest}
                 onUpdateRequest={updateRequest}
                 onSend={handleSendRequest}
                 loading={loading}
               />
+            </div>
+            {showCorsWarning && (
+                <div className="px-4 pb-4">
+                    <Alert variant="destructive" className="relative">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>CORS Error</AlertTitle>
+                        <AlertDescription>
+                            The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
+                        </AlertDescription>
+                        <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
+                            <X className="h-4 w-4" />
+                        </button>
+                    </Alert>
+                </div>
+            )}
+            <div className="flex-1 p-4 pt-0">
               <ResponsePanel response={response} loading={loading} />
+            </div>
           </div>
         </SidebarInset>
       </div>

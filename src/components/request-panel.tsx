@@ -8,8 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { KeyValueEditor } from './key-value-editor';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent } from './ui/card';
-import { Send, Loader2, AlertTriangle } from 'lucide-react';
-import { Badge } from './ui/badge';
+import { Send, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RequestPanelProps {
   request: ApiRequest;
@@ -27,39 +27,55 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
     onUpdateRequest({ bodyType });
   };
 
+  const getMethodClass = (method: HttpMethod) => {
+    switch (method) {
+      case 'GET': return 'text-green-500';
+      case 'POST': return 'text-orange-500';
+      case 'PUT': return 'text-blue-500';
+      case 'PATCH': return 'text-purple-500';
+      case 'DELETE': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+  };
+
   return (
-    <div>
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex gap-2 mb-4">
-            <Select value={request.method} onValueChange={handleMethodChange}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="GET">GET</SelectItem>
-                <SelectItem value="POST">POST</SelectItem>
-                <SelectItem value="PUT">PUT</SelectItem>
-                <SelectItem value="PATCH">PATCH</SelectItem>
-                <SelectItem value="DELETE">DELETE</SelectItem>
-                <SelectItem value="HEAD">HEAD</SelectItem>
-                <SelectItem value="OPTIONS">OPTIONS</SelectItem>
-              </SelectContent>
-            </Select>
+    <Card className="shadow-md">
+      <CardContent className="p-0">
+        <div className="flex gap-0">
+          <Select value={request.method} onValueChange={handleMethodChange}>
+            <SelectTrigger className={cn(
+              "w-[120px] rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0",
+              getMethodClass(request.method)
+            )}>
+              <SelectValue placeholder="Method" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="GET">GET</SelectItem>
+              <SelectItem value="POST">POST</SelectItem>
+              <SelectItem value="PUT">PUT</SelectItem>
+              <SelectItem value="PATCH">PATCH</SelectItem>
+              <SelectItem value="DELETE">DELETE</SelectItem>
+              <SelectItem value="HEAD">HEAD</SelectItem>
+              <SelectItem value="OPTIONS">OPTIONS</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex-1 relative">
             <Input
-              placeholder="https://api.example.com/data"
-              value={request.url}
-              onChange={e => onUpdateRequest({ url: e.target.value })}
-              className="font-code"
+                placeholder="https://api.example.com/data"
+                value={request.url}
+                onChange={e => onUpdateRequest({ url: e.target.value })}
+                className="font-code rounded-l-none pr-28"
             />
-            <Button onClick={onSend} disabled={loading} className="w-[100px]">
+             <Button onClick={onSend} disabled={loading} className="w-[100px] absolute right-1 top-1/2 -translate-y-1/2 h-8">
               {loading ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
               Send
             </Button>
           </div>
+        </div>
 
-          <Tabs defaultValue="params">
-            <TabsList>
+        <div className="p-4">
+          <Tabs defaultValue="params" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="params">Query Params</TabsTrigger>
               <TabsTrigger value="headers">Headers</TabsTrigger>
               <TabsTrigger value="body">Body</TabsTrigger>
@@ -109,12 +125,8 @@ export function RequestPanel({ request, onUpdateRequest, onSend, loading }: Requ
               </div>
             </TabsContent>
           </Tabs>
-          <p className="mt-4 p-2 bg-secondary rounded-md text-secondary-foreground text-xs flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-accent"/>
-            This app sends requests directly from your browser. Requests may fail due to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener noreferrer" className="underline">CORS</a> policies of the destination server.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

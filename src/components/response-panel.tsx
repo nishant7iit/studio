@@ -4,10 +4,11 @@ import { ApiResponse } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { CodeSnippetViewer } from './code-snippet-viewer';
 import { Table, TableBody, TableCell, TableRow } from './ui/table';
 import { Clock, HardDrive, Server } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { ScrollArea } from './ui/scroll-area';
+import { JsonViewer } from './json-viewer';
 
 interface ResponsePanelProps {
   response: ApiResponse | null;
@@ -17,7 +18,7 @@ interface ResponsePanelProps {
 export function ResponsePanel({ response, loading }: ResponsePanelProps) {
   if (loading) {
     return (
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <CardTitle>Response</CardTitle>
         </CardHeader>
@@ -38,10 +39,10 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
 
   if (!response) {
     return (
-      <Card className="flex-1 flex items-center justify-center min-h-[200px]">
-        <div className="text-center text-muted-foreground">
+      <Card className="h-full flex items-center justify-center min-h-[200px]">
+        <div className="text-center text-muted-foreground animate-pulse">
           <Server className="mx-auto h-12 w-12" />
-          <p className="mt-4">Send a request to see the response here</p>
+          <p className="mt-4 font-medium">Send a request to see the response</p>
         </div>
       </Card>
     );
@@ -55,11 +56,11 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
   };
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>Response</CardTitle>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-xs">
             <Badge variant="outline" className="flex items-center gap-2">
               <span className={`h-2 w-2 rounded-full ${getStatusColor(response.status)}`}></span>
               Status: {response.status} {response.statusText}
@@ -73,29 +74,30 @@ export function ResponsePanel({ response, loading }: ResponsePanelProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="body">
+      <CardContent className="flex-1 flex flex-col min-h-0">
+        <Tabs defaultValue="body" className="flex-1 flex flex-col">
           <TabsList>
             <TabsTrigger value="body">Body</TabsTrigger>
             <TabsTrigger value="headers">Headers</TabsTrigger>
           </TabsList>
-          <TabsContent value="body" className="mt-4">
-            <CodeSnippetViewer
-              code={JSON.stringify(response.data, null, 2)}
-              language="json"
-            />
+          <TabsContent value="body" className="mt-4 flex-1 min-h-0">
+            <ScrollArea className="h-full">
+              <JsonViewer data={response.data} />
+            </ScrollArea>
           </TabsContent>
-          <TabsContent value="headers" className="mt-4">
-            <Table>
-              <TableBody>
-                {Object.entries(response.headers).map(([key, value]) => (
-                  <TableRow key={key}>
-                    <TableCell className="font-medium font-code">{key}</TableCell>
-                    <TableCell className="font-code">{value}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <TabsContent value="headers" className="mt-4 flex-1 min-h-0">
+            <ScrollArea className="h-full rounded-md border">
+              <Table>
+                <TableBody>
+                  {Object.entries(response.headers).map(([key, value]) => (
+                    <TableRow key={key}>
+                      <TableCell className="font-medium font-code">{key}</TableCell>
+                      <TableCell className="font-code">{value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </CardContent>
