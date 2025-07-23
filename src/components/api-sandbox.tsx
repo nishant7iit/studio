@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -17,7 +18,10 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const generateId = (): string => {
-    // This function is safe to use on the client side now
+    if (typeof window === 'undefined') {
+      // Return a placeholder or handle server-side case
+      return `ssr_id_${Math.random()}`;
+    }
     return `id_${Math.random().toString(36).substring(2, 11)}`;
 };
 
@@ -38,7 +42,7 @@ export function ApiSandbox() {
 
   useEffect(() => {
     // Only run on the client
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !activeRequest) {
         const defaultRequest: ApiRequest = {
           id: generateId(),
           name: 'Untitled Request',
@@ -51,7 +55,7 @@ export function ApiSandbox() {
         };
         setActiveRequest(defaultRequest);
     }
-  }, []);
+  }, [activeRequest]);
 
 
   const updateRequest = (updatedFields: Partial<ApiRequest>) => {
@@ -260,6 +264,7 @@ export function ApiSandbox() {
     if (isCodeGenOpen && activeRequest) {
       handleGenerateCode(codeLanguage);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCodeGenOpen, codeLanguage]);
 
   if (!activeRequest) {
@@ -329,30 +334,31 @@ export function ApiSandbox() {
             </div>
           </header>
           
-          <div className="flex-1 flex flex-col overflow-y-auto">
-            <div className="p-4">
-              <RequestPanel 
-                request={activeRequest}
-                onUpdateRequest={updateRequest}
-                onSend={handleSendRequest}
-                loading={loading}
-              />
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 overflow-hidden">
+            <div className="flex flex-col overflow-y-auto">
+                <RequestPanel 
+                    request={activeRequest}
+                    onUpdateRequest={updateRequest}
+                    onSend={handleSendRequest}
+                    loading={loading}
+                />
+                {showCorsWarning && (
+                    <div className="pt-4">
+                        <Alert variant="destructive" className="relative">
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertTitle>CORS Error</AlertTitle>
+                            <AlertDescription>
+                                The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
+                            </AlertDescription>
+                            <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
+                                <X className="h-4 w-4" />
+                            </button>
+                        </Alert>
+                    </div>
+                )}
             </div>
-            {showCorsWarning && (
-                <div className="px-4 pb-4">
-                    <Alert variant="destructive" className="relative">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>CORS Error</AlertTitle>
-                        <AlertDescription>
-                            The request was blocked by the browser's CORS policy. This is a security feature to prevent cross-origin requests. You can often resolve this by using a CORS proxy or ensuring the server is configured to allow requests from this origin.
-                        </AlertDescription>
-                        <button onClick={() => setShowCorsWarning(false)} className="absolute top-2 right-2">
-                            <X className="h-4 w-4" />
-                        </button>
-                    </Alert>
-                </div>
-            )}
-            <div className="flex-1 p-4 pt-0">
+
+            <div className="flex flex-col overflow-y-auto h-full">
               <ResponsePanel response={response} loading={loading} />
             </div>
           </div>
